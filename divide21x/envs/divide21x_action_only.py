@@ -108,6 +108,15 @@ class Divide21XActionOnly(gym.Env):
         
         return decoded_state
     
+    def _decode_action(self, action):
+        action_decoded = {
+            "division": True if int(action["division"]) else False,
+            "digit": int(action["digit"]),
+            "rindex": int(action["rindex"]) if not int(action["division"]) else None
+        }
+        
+        return action_decoded
+    
     def step(self, action):
         obs, reward, terminated, truncated, info = self.base_env.step(action)
 
@@ -117,10 +126,13 @@ class Divide21XActionOnly(gym.Env):
         #   (2)
         state_after_action_decoded = self._decode_state(obs)
         
+        # Decode action
+        action_decoded = self._decode_action(action)
+        
         # Log transition
         self.logger.episode_log.append({
             "state_before_action": state_before_action_decoded,
-            "action": action,
+            "action": action_decoded,
             "state_after_action": state_after_action_decoded,
             "reward": reward,
             "terminated": terminated,
