@@ -6,11 +6,7 @@ import os
 from divide21x.utils.logger import EpisodeLogger
 
 
-class Divide21XActionOnly(gym.Env):
-    """
-    Phase 1 Divide21X environment:
-    Agents submit actions only — no explanations yet.
-    """
+class InsperctorAction(gym.Env):
 
     metadata = {"render_modes": ["human"]}
 

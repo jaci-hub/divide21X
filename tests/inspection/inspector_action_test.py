@@ -1,6 +1,6 @@
-from divide21x.envs.divide21x_action_only import Divide21XActionOnly
+from divide21x.inspection.inspector_action import InsperctorAction
 
-env = Divide21XActionOnly()
+env = InsperctorAction()
 
 
 if __name__ == "__main__":
@@ -14,3 +14,4 @@ if __name__ == "__main__":
     obs, info = env.reset()
     # execute action
     obs, reward, terminated, truncated, info = env.step(action)
+    
