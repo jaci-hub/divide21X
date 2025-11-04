@@ -4,11 +4,11 @@ setup(
     name="divide21x",
     version="0.1.0",
     author="Jacinto Jeje Matamba Quimua",
-    description="Divide21X Phase 1: Action-only benchmark environment for Divide21.",
+    description="Divide21X Phase 1: Action-only benchmark environment for faithful strategic reasoning.",
     packages=find_packages(),
     install_requires=[
         "gymnasium>=0.29",
-        "divide21env>=0.1.5",
+        "divide21env>=0.2.0",
     ],
     python_requires=">=3.10",
 )
