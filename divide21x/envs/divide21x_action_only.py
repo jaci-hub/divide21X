@@ -14,12 +14,13 @@ class Divide21XActionOnly(gym.Env):
 
     metadata = {"render_modes": ["human"]}
 
-    def __init__(self, render_mode=None):
+    def __init__(self, digits=2, players=1, render_mode=None, auto_render=False):
         super().__init__()
-        self.base_env = gym.make("Divide21-v0")
+        self.base_env = gym.make("Divide21-v0", digits=digits, players=players, render_mode=render_mode, auto_render=auto_render)
         self.action_space = self.base_env.action_space
         self.observation_space = self.base_env.observation_space
         self.render_mode = render_mode
+        self.auto_render = auto_render
 
         # Logging
         self.logger = EpisodeLogger()
@@ -108,15 +109,6 @@ class Divide21XActionOnly(gym.Env):
         
         return decoded_state
     
-    def _decode_action(self, action):
-        action_decoded = {
-            "division": True if int(action["division"]) else False,
-            "digit": int(action["digit"]),
-            "rindex": int(action["rindex"]) if not int(action["division"]) else None
-        }
-        
-        return action_decoded
-    
     def step(self, action):
         obs, reward, terminated, truncated, info = self.base_env.step(action)
 
@@ -126,25 +118,21 @@ class Divide21XActionOnly(gym.Env):
         #   (2)
         state_after_action_decoded = self._decode_state(obs)
         
-        # Decode action
-        action_decoded = self._decode_action(action)
-        
         # Log transition
         self.logger.episode_log.append({
             "state_before_action": state_before_action_decoded,
-            "action": action_decoded,
+            "action": action,
             "state_after_action": state_after_action_decoded,
             "reward": reward,
             "terminated": terminated,
-            "truncated": truncated
+            "truncated": truncated,
+            "info": info
         })
         
         # Update the state
         self.state = obs
-
-        # Append placeholder for future explanations
-        info["explanation"] = "Not required in this version of Divide21X."
         
+        # log episode
         self.logger.save_episode()
 
         return obs, reward, terminated, truncated, info
