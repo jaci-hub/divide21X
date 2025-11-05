@@ -7,24 +7,22 @@ Description:
 Evaluation module for Divide21X Phase 1: Action-only benchmark environment
 for faithful strategic reasoning.
 
-This module compares an LLM's submitted action and resulting game state
-against the ground-truth Divide21 agent to produce a numerical fidelity score.
-
-Scoring is based on:
-    (1) Action Fidelity — how closely the LLM's chosen action matches the ground-truth action.
-    (2) State Fidelity  — how similar the resulting next-state is to the ground-truth next-state.
-
-Both are combined to form an overall Divide21X Phase 1 score.
+This module checks the inspection result for the action and the state. 
+    If failed inspection, then they are redirected to the appropriate graders
+    else, the action-state implication/generation is evaluated
+    finally, they are compared to the ground truth action and state.
 """
+import gymnasium as gym
+from gymnasium import spaces
 import divide21env
 from divide21env.envs.divide21_env import Divide21Env
-from divide21x.inspection.inspector_action import InsperctorAction
+from divide21x.inspection.inspector import Inspector
 import numpy as np
 import math
-from typing import Dict, Any, Tuple
+from divide21x.utils.logger import EpisodeLogger
 
 
-class Evaluator():
+class Evaluator(gym.Env):
     """
     Evaluates action-only submissions (no explanations) from LLMs against
     the Divide21 ground-truth agent.
@@ -32,123 +30,141 @@ class Evaluator():
     Usage:
     -------
     >>> evaluator = Evaluator()
-    >>> result = evaluator.evaluate_submission(llm_action, ground_truth_action, llm_state, gt_state)
-    >>> print(result)
-    {'action_fidelity': 0.8, 'state_fidelity': 0.9, 'overall_score': 0.85}
+    >>> action_score = inspector.get_action_score()
+    >>> print(action_score)
+    2
+    >>> state_result = inspector.get_state_inspection_result()
+    >>> print(state_result)
+    1
     """
 
-    def __init__(self, digits: int = 3, players: list = None):
-        self.digits = digits
-        self.players = players or [{"id": 0, "score": 0, "is_current_turn": 1}]
-        self.gt_env = Divide21Env(digits=self.digits, players=self.players)
+    metadata = {"render_modes": ["human"]}
 
-    # ------------------------------------------------------------------
-    # Helper functions
-    # ------------------------------------------------------------------
-    def _normalize_action(self, action: Dict[str, Any]) -> Dict[str, Any]:
-        """Ensure the action dict is in canonical form."""
-        return {
-            "division": bool(action.get("division", 0)),
-            "digit": int(action.get("digit", 0)),
-            "rindex": int(action.get("rindex", 0)),
-        }
+    def __init__(self, digits=2, players=1, render_mode=None, auto_render=False):
+        super().__init__()
+        self.base_env = gym.make("Divide21-v0", digits=digits, players=players, render_mode=render_mode, auto_render=auto_render)
+        self.action_space = self.base_env.action_space
+        self.observation_space = self.base_env.observation_space
+        self.render_mode = render_mode
+        self.auto_render = auto_render
 
-    def _action_distance(self, a1: Dict[str, Any], a2: Dict[str, Any]) -> float:
-        """
-        Compute normalized distance between two actions.
-        Returns value in [0,1], where 1.0 = identical, 0.0 = completely different.
-        """
-        keys = ["division", "digit", "rindex"]
-        matches = sum(1 for k in keys if a1.get(k) == a2.get(k))
-        return matches / len(keys)
+        # Logging
+        self.logger = EpisodeLogger()
 
-    def _state_similarity(self, s1: Dict[str, Any], s2: Dict[str, Any]) -> float:
-        """
-        Computes state similarity between two Divide21 states.
-        Each state is expected to contain:
-            - 'dynamic_number'
-            - 'available_digits_per_rindex'
-            - 'players'
-            - 'player_turn'
-        """
-        score = 0
-        total = 0
+    def reset(self, *, seed=None, options=None):
+        obs, info = self.base_env.reset(seed=seed, options=options)
+        self.state = obs
+        self.logger = EpisodeLogger()
+        return obs, info
 
-        # Compare dynamic_number
-        n1 = "".join(map(str, s1.get("dynamic_number", [])))
-        n2 = "".join(map(str, s2.get("dynamic_number", [])))
-        total += 1
-        score += 1 if n1 == n2 else 1 - min(1.0, abs(int(n1) - int(n2)) / 999)
+    def _decode_dynamic_number(self, dynamic_number):
+        decoded_dynamic_number = [str(d) for d in dynamic_number.tolist()]
+        decoded_dynamic_number = ''.join(decoded_dynamic_number)
+        decoded_dynamic_number = int(decoded_dynamic_number)
+        return decoded_dynamic_number
+    
+    def _decode_available_digits(self, flat_mask, digits):
+        '''
+        Reconstruct the available_digits_per_rindex dictionary from the
+        flattened mask produced by _encode_available_digits().
 
-        # Compare player_turn
-        total += 1
-        score += 1 if s1.get("player_turn") == s2.get("player_turn") else 0
+        Args:
+            flat_mask (array-like): Flattened binary mask of shape (self.digits * 10,)
 
-        # Compare players' scores (normalized)
-        total += 1
-        p1_scores = np.array(s1.get("players", []))[1::3] if len(s1.get("players", [])) > 0 else np.zeros(1)
-        p2_scores = np.array(s2.get("players", []))[1::3] if len(s2.get("players", [])) > 0 else np.zeros(1)
-        diff = np.abs(p1_scores - p2_scores).mean() if len(p1_scores) == len(p2_scores) else 1
-        score += 1 - min(1.0, diff / 10)
+        Returns:
+            dict[int, list[int]]: Dictionary mapping each rindex to its list of available digits.
+        '''
+        # Ensure it's a list of ints
+        flat_list = list(flat_mask)
+        # Rebuild mask as 2D matrix (digits x 10)
+        mask_2d = [flat_list[i * 10 : (i + 1) * 10] for i in range(digits)]
+        
+        # Decode dictionary
+        decoded = {}
+        for rindex, row in enumerate(mask_2d):
+            available_digits = [digit for digit, flag in enumerate(row) if flag == 1]
+            decoded[rindex] = available_digits
 
-        # Compare available digits mask (Jaccard similarity)
-        total += 1
-        d1 = set(np.where(np.array(s1.get("available_digits_per_rindex", [])) == 1)[0])
-        d2 = set(np.where(np.array(s2.get("available_digits_per_rindex", [])) == 1)[0])
-        intersection = len(d1.intersection(d2))
-        union = len(d1.union(d2)) or 1
-        score += intersection / union
+        return decoded
+    
+    def _decode_players(self, flat_array):
+        '''
+        Reconstruct the list of player dictionaries from the flattened NumPy array
+        produced by _encode_players().
 
-        return score / total
+        Args:
+            flat_array (array-like): Flattened 1D list or NumPy array of shape (num_players * 3,).
 
-    # ------------------------------------------------------------------
-    # Main evaluation function
-    # ------------------------------------------------------------------
-    def evaluate_submission(
-        self,
-        llm_action: Dict[str, Any],
-        gt_action: Dict[str, Any],
-        llm_state: Dict[str, Any],
-        gt_state: Dict[str, Any],
-        alpha: float = 0.5
-    ) -> Dict[str, float]:
-        """
-        Evaluate one LLM submission (action + state) against ground truth.
-
-        Parameters
-        ----------
-        llm_action : dict
-            Model's submitted action (division, digit, rindex)
-        gt_action : dict
-            Ground-truth agent's action
-        llm_state : dict
-            Resulting state after model's action
-        gt_state : dict
-            Resulting state after ground-truth action
-        alpha : float
-            Weighting factor between action and state fidelity (default = 0.5)
-
-        Returns
-        -------
-        dict
-            {
-                "action_fidelity": float,
-                "state_fidelity": float,
-                "overall_score": float
+        Returns:
+            list[dict]: List of players, each as {"id": int, "score": int, "is_current_turn": int}.
+        '''
+        # Ensure it's a plain list of ints
+        flat_list = list(flat_array)
+        
+        # Each player has 3 attributes: [id, score, is_current_turn]
+        num_players = len(flat_list) // 3
+        
+        players = []
+        for i in range(num_players):
+            start = i * 3
+            pid, score, turn_flag = flat_list[start:start + 3]
+            player = {
+                "id": int(pid),
+                "score": int(score),
+                "is_current_turn": int(turn_flag)
             }
-        """
-        llm_action = self._normalize_action(llm_action)
-        gt_action = self._normalize_action(gt_action)
-
-        # Compute fidelities
-        action_fidelity = self._action_distance(llm_action, gt_action)
-        state_fidelity = self._state_similarity(llm_state, gt_state)
-
-        # Combine scores
-        overall_score = alpha * action_fidelity + (1 - alpha) * state_fidelity
-
-        return {
-            "action_fidelity": round(float(action_fidelity), 4),
-            "state_fidelity": round(float(state_fidelity), 4),
-            "overall_score": round(float(overall_score), 4),
+            players.append(player)
+        
+        return players
+    
+    def _decode_player_turn(self, player_turn):
+        return int(player_turn)
+    
+    def _decode_state(self, state):
+        '''
+        the observation space attributes from Divide21Env are in numpy variables which are not json compatible, 
+        so make sure they are.
+        '''
+        decoded_static_number = self._decode_dynamic_number(state["static_number"])
+        decoded_dynamic_number = self._decode_dynamic_number(state["dynamic_number"])
+        decoded_state = {
+            "static_number": decoded_static_number,
+            "dynamic_number": decoded_dynamic_number,
+            "available_digits_per_rindex": self._decode_available_digits(state["available_digits_per_rindex"], len(str(decoded_dynamic_number))),
+            "players": self._decode_players(state["players"]),
+            "player_turn": self._decode_player_turn(state["player_turn"])
         }
+        
+        return decoded_state
+    
+    def step(self, action):
+        obs, reward, terminated, truncated, info = self.base_env.step(action)
+
+        # Decode states
+        #   (1)
+        state_before_action_decoded = self._decode_state(self.state)
+        #   (2)
+        state_after_action_decoded = self._decode_state(obs)
+        
+        # Log transition
+        self.logger.episode_log.append({
+            "state_before_action": state_before_action_decoded,
+            "action": action,
+            "state_after_action": state_after_action_decoded,
+            "reward": reward,
+            "terminated": terminated,
+            "truncated": truncated,
+            "info": info
+        })
+        
+        # Update the state
+        self.state = obs
+        
+        # log episode
+        self.logger.save_episode()
+
+        return obs, reward, terminated, truncated, info
+
+    def render(self):
+        return self.base_env.render()
+
