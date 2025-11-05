@@ -4,6 +4,8 @@ import os
 import numpy as np
 from divide21x.utils.logger import EpisodeLogger
 
+# base dir
+BASE_DIR = './divide21x/inspection/logs'
 # categories
 ACTION = 'action'
 STATE = 'state'
@@ -36,7 +38,7 @@ class Inspector():
         self.info = {}
         
         # Logging
-        self.logger = EpisodeLogger(base_dir='./divide21x/inspection/logs')
+        self.logger = EpisodeLogger(BASE_DIR)
     
     def _add_info(self, category=None, type=None, message=None):
         if category not in self.info:
