@@ -10,6 +10,9 @@ class EpisodeLogger:
         self.episode_log = []
 
     def save_episode(self):
+        if not self.episode_log:
+            return
+        
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         path = os.path.join(self.base_dir, f"episode_{self.episode}_{ts}.json")
         with open(path, "w") as f:
