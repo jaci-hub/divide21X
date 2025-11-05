@@ -34,6 +34,7 @@ class Inspector():
         # scores
         self.action_score = 10
         self.state_score = 40
+        self.overall_score = self.action_score + self.state_score
         self.action_passing_score = 10
         self.state_passing_score = 40
         self.overall_passing_score = self.action_passing_score + self.state_passing_score
@@ -248,6 +249,12 @@ class Inspector():
     
     def state_passed(self):
         return self.state_passing_score == self.state_score
+    
+    def get_overall_score(self):
+        return self.overall_score
+    
+    def all_passed(self):
+        return self.overall_score == self.overall_passing_score
     
     def get_action_passing_score(self):
         return self.action_passing_score
