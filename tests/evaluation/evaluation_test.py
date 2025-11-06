@@ -1,7 +1,34 @@
 from divide21x.evaluation.evaluator import Evaluator
 
 
-if __name__ == "__main__":
+
+def test_action():
+    # given action
+    action = {
+        "division": 1, # it can be True
+        "digit": 2,
+        "rindex": None
+    }
+    
+    action1 = {
+        "division": 1, # it can be True
+        "digit": 2,
+        "rindex": 2
+    }
+    
+    action2 = {
+        "division": 1, # it can be True
+        "digit": 2,
+        "rindex": None
+    }
+    
+    evaluator = Evaluator(action=action)
+    evaluator.compare_actions(action1, action2)
+    # evaluator.action_generates_state()
+    
+    evaluator.logger.save_episode()
+
+def test_state():
     # given state
     state = {
         "static_number": 19,
@@ -32,3 +59,10 @@ if __name__ == "__main__":
     # evaluator.action_generates_state()
     
     evaluator.logger.save_episode()
+    
+
+if __name__ == "__main__":    
+    test_action()
+    
+    # test_state()
+    

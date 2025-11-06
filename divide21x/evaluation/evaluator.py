@@ -23,12 +23,15 @@ from divide21x.simulator.divide21env_simulator import Divide21EnvSimulator
 import numpy as np
 import math
 from divide21x.utils.logger import EpisodeLogger
+from divide21x.ground_truth.ground_truth import GroundTruth
 
 
 BASE_DIR='./divide21x/evaluation/logs'
 # categories
 ACTION = 'action'
 STATE = 'state'
+ACTION_STATE = 'action_state'
+ACTION_COMPARISON = 'action_comparison'
 STATE_COMPARISON = 'state_comparison'
 # types
 CRITICAL = 'critical'
@@ -36,6 +39,7 @@ WARNING = 'warning'
 NOTE = 'note'
 SCORE = 'score'
 EQUIVALENT = 'equivalent'
+DEDUCTION_POINTS = 'deduction_points'
 
 class Evaluator(Inspector):
     """
@@ -57,12 +61,108 @@ class Evaluator(Inspector):
         self.inspect_all()
         
         self.generated_state = None
+        self.points_to_deduct = 0
+        self.ground_truth_action_score = 0
+        self.ground_truth_state_score = 0
                 
         # Logging
         self.logger = EpisodeLogger(BASE_DIR)
         
     def evaluate(self):
-        pass
+        # check inspection results
+        if self.action_passed() and self.state_passed():
+            # check if action implies/generates state
+            states_are_equivalent, states_similarity_score = self.action_generates_state()
+            if not states_are_equivalent:
+                message = 'Action does not generate state!'
+                self.logger.add_info(WARNING, ACTION_STATE, message)
+                # set points to deduct
+                self.points_to_deduct = 100 - states_similarity_score
+                self.logger.add_info(WARNING, DEDUCTION_POINTS, self.points_to_deduct)
+            
+            # compare to ground truth
+            self.compare_to_ground_truth()
+    
+    def compare_actions(self, given_action1=None, given_action2=None):
+        '''
+        compares two actions from Divide21 game, and checks if they are equivalent.
+        Note: it cant just do a comparison with "==" because it does not consider closeness. 
+            For example, if action1 and action2 only differ in one key-value, the similarity score should be higher than
+            if they differed in all three.
+        returns: 
+            tuple(actions_are_equivalent, similarity_score): 
+                actions_are_equivalent(bool): True if the actions are equivalent, meaning that they have the exact same value.
+                similarity_score(float): how similar the actions are on a scale of 0-100:
+                    If 0, they are completely different
+                    If 100, they are equivalent
+        
+        action format example:
+            action = {
+                "division": 1, # it can be True
+                "digit": 2,
+                "rindex": None
+            }
+        '''
+        # --- Setup ---
+        action1 = given_action1 if given_action1 is not None else None
+        action2 = given_action2 if given_action2 is not None else None
+
+        if action1 is None or action2 is None:
+            message = "Two actions must be provided."
+            self.logger.add_info(ACTION_COMPARISON, CRITICAL, message)
+            # log
+            if self.logger.info not in self.logger.episode_log:
+                self.logger.episode_log.append(self.logger.info)
+            return (False, 0.0)
+
+        expected_keys = {"division", "digit", "rindex"}
+        if set(action1.keys()) != expected_keys or set(action2.keys()) != expected_keys:
+            message = f"Action dictionary must have exactly these keys: {', '.join(expected_keys)}."
+            self.logger.add_info(ACTION_COMPARISON, CRITICAL, message)
+            # log
+            if self.logger.info not in self.logger.episode_log:
+                self.logger.episode_log.append(self.logger.info)
+            return (False, 0.0)
+
+        # --- Normalize ---
+        def normalize(a):
+            return {
+                "division": bool(a.get("division", False)),
+                "digit": a.get("digit", None),
+                "rindex": a.get("rindex", None)
+            }
+
+        a1 = normalize(action1)
+        a2 = normalize(action2)
+
+        # --- Comparison ---
+        total_keys = 3
+        matches = 0
+
+        # (1) division
+        if a1["division"] == a2["division"]:
+            matches += 1
+
+        # (2) digit
+        if a1["digit"] == a2["digit"]:
+            matches += 1
+
+        # (3) rindex
+        if a1["rindex"] == a2["rindex"]:
+            matches += 1
+
+        # --- Compute final score ---
+        similarity_score = round((matches / total_keys) * 100, 2)
+        actions_are_equivalent = similarity_score == 100.0
+        
+        self.logger.add_info(ACTION_COMPARISON, EQUIVALENT, actions_are_equivalent)
+        self.logger.add_info(ACTION_COMPARISON, SCORE, similarity_score)
+
+        # log
+        if self.logger.info not in self.logger.episode_log:
+            self.logger.episode_log.append(self.logger.info)
+
+        return actions_are_equivalent, similarity_score
     
     def compare_states(self, given_state1=None, given_state2=None):
         '''
@@ -101,8 +201,8 @@ class Evaluator(Inspector):
             
         # Start comparison of states 1 and 2
         if state1 is None or state2 is None:
-            message = "Only one state was provided."
-            self.logger.add_info(STATE_COMPARISON, WARNING, message)
+            message = "Two states must be provided."
+            self.logger.add_info(STATE_COMPARISON, CRITICAL, message)
             # log
             if self.logger.info not in self.logger.episode_log:
                 self.logger.episode_log.append(self.logger.info)
@@ -111,8 +211,8 @@ class Evaluator(Inspector):
         # --- Early shape check ---
         expected_keys = {'static_number', 'dynamic_number', 'available_digits_per_rindex', 'players', 'player_turn'}
         if set(state1.keys()) != expected_keys or set(state2.keys()) != expected_keys:
-            message = f"A state dictionary must have exactly these keys: {', '.join(expected_keys)}."
-            self.logger.add_info(STATE_COMPARISON, WARNING, message)
+            message = f"State dictionary must have exactly these keys: {', '.join(expected_keys)}."
+            self.logger.add_info(STATE_COMPARISON, CRITICAL, message)
             # log
             if self.logger.info not in self.logger.episode_log:
                 self.logger.episode_log.append(self.logger.info)
@@ -174,7 +274,6 @@ class Evaluator(Inspector):
                 
         return equivalent, similarity_score
         
-    
     def action_generates_state(self):
         '''
         checks if the given action implies/generates the given state
@@ -185,8 +284,29 @@ class Evaluator(Inspector):
         self.generated_state = divide21env_simulator._decode_state(obs)
         
         # compare the given state to the generated state
-        #   note: cant just do a comparison with "==" because since both of them have lists, 
-        #         the lists might not be in the same order but still have all the correct elements
-        #         which would result in a False negative! So, a new function specialized for this is needed.
-        equivalent, similarity_score = self.compare_states()
+        states_are_equivalent, states_similarity_score = self.compare_states()
+
+        return states_are_equivalent, states_similarity_score
     
+    def compare_to_ground_truth(self):
+        '''
+        checks if the action and state are optimal
+        '''
+        # get optimal action
+        ground_truth = GroundTruth(self.state)
+        ground_truth_action = ground_truth.get_action()
+        # generate state from the optimal action
+        divide21env_simulator = Divide21EnvSimulator(given_obs=self.state)
+        obs, reward, terminated, truncated, info = divide21env_simulator.step(ground_truth_action)
+        ground_truth_state = divide21env_simulator._decode_state(obs)
+        
+        # (1) action
+        action_are_equivalent, action_similarity_score = self.compare_actions(self.action, ground_truth_action)
+        # (2) state
+        states_are_equivalent, states_similarity_score = self.compare_states(self.state, ground_truth_state)
+        
+        # set ground truth score
+        self.ground_truth_action_score = action_similarity_score
+        self.ground_truth_state_score = states_similarity_score
+        
+        
