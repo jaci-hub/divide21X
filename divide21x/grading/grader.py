@@ -31,9 +31,7 @@ ACTION_STATE = 'action_state'
 CRITICAL = 'critical'
 WARNING = 'warning'
 NOTE = 'note'
-SCORE = 'score'
-EQUIVALENT = 'equivalent'
-DEDUCTION_POINTS = 'deduction_points'
+GRADE = 'grade'
 
 
 class Grader(Evaluator):
@@ -74,7 +72,52 @@ class Grader(Evaluator):
                 "overall_grade": float
             }
         """
+        
+        # check inspection results
+        #   (1) Action-State passed
+        if self.action_passed() and self.state_passed():
+            self.action_grade = max(0, self.ground_truth_action_score - self.points_to_deduct/2)
+            self.state_grade = max(0, self.ground_truth_state_score - self.points_to_deduct/2)
+            message = "Both action and state passed the inspection."
+            self.logger.add_info(ACTION_STATE, NOTE, message)
+            self.logger.add_info(ACTION, GRADE, self.action_grade)
+            self.logger.add_info(STATE, GRADE, self.state_grade)
+            
+        #   (2) Only Action passed
+        elif self.action_passed() and not self.state_passed():
+            self.action_grade = self.ground_truth_action_score
+            self.state_grade = 0
+            message = "Only the action passed the inspection."
+            self.logger.add_info(ACTION_STATE, WARNING, message)
+            self.logger.add_info(ACTION, GRADE, self.action_grade)
+            self.logger.add_info(STATE, GRADE, self.state_grade)
+        
+        #   (3) Only State passed
+        elif not self.action_passed() and self.state_passed():
+            self.action_grade = 0
+            self.state_grade = self.ground_truth_state_score
+            message = "Only the state passed the inspection."
+            self.logger.add_info(ACTION_STATE, WARNING, message)
+            self.logger.add_info(ACTION, GRADE, self.action_grade)
+            self.logger.add_info(STATE, GRADE, self.state_grade)
+        
+        #   (4) Action-State did not pass
+        elif not self.action_passed() and not self.state_passed():
+            self.action_grade = 0
+            self.state_grade = 0
+            message = "Both the action and the state failed the inspection."
+            self.logger.add_info(ACTION_STATE, CRITICAL, message)
+            self.logger.add_info(ACTION, GRADE, self.action_grade)
+            self.logger.add_info(STATE, GRADE, self.state_grade)
 
+        # overall grade
+        self.overall_grade = (self.action_grade + self.state_grade)/2
+        self.logger.add_info(ACTION_STATE, GRADE, self.overall_grade)
+        
+        # log
+        if self.logger.info not in self.logger.episode_log:
+            self.logger.episode_log.append(self.logger.info)
+        
         return {
             "action_grade": round(float(self.action_grade), 2),
             "state_grade": round(float(self.state_grade), 2),
