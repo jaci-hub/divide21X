@@ -4,7 +4,7 @@ Date: 11/01/2025
 
 Description:
 ------------
-Evaluation module for Divide21X Phase 1: Action-only benchmark environment
+Evaluation module for Divide21X Phase 1: Action-State benchmark environment
 for faithful strategic reasoning.
 
 This module checks the inspection result for the action and the state. 
@@ -43,7 +43,7 @@ DEDUCTION_POINTS = 'deduction_points'
 
 class Evaluator(Inspector):
     """
-    Evaluates action-only submissions (no explanations) from LLMs against
+    Evaluates action-State submissions (no explanations) from LLMs against
     the Divide21 ground-truth agent.
 
     Usage:
