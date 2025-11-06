@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "divide21x"
 version = "0.1.0"
-description = "Divide21X Phase 1: Action-only benchmark environment for faithful strategic reasoning."
+description = "Divide21X Phase 1: Action-State benchmark environment for faithful strategic reasoning."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
