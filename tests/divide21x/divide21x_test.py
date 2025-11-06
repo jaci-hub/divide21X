@@ -1,7 +1,5 @@
 from divide21x.envs.divide21x import Divide21X
 
-env = Divide21X()
-
 
 if __name__ == "__main__":
     # LLM input action
@@ -19,3 +17,5 @@ if __name__ == "__main__":
         "players": [{'id': 0, 'score': -13, 'is_current_turn': 1}],
         "player_turn": 0
     }
+    
+    env = Divide21X(action=action, state=state)
