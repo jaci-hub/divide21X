@@ -14,7 +14,7 @@ class Divide21EnvSimulator(gym.Env):
 
     metadata = {"render_modes": ["human"]}
 
-    def __init__(self, digits=2, players=1, render_mode=None, auto_render=False, given_obs=None):
+    def __init__(self, digits=2, players=1, render_mode=None, auto_render=False):
         super().__init__()
         self.base_env = gym.make("Divide21-v0", digits=digits, players=players, render_mode=render_mode, auto_render=auto_render)
         self.action_space = self.base_env.action_space
@@ -22,8 +22,6 @@ class Divide21EnvSimulator(gym.Env):
         self.render_mode = render_mode
         self.auto_render = auto_render
         
-        self.given_obs = given_obs
-
         # Logging
         self.logger = EpisodeLogger(BASE_DIR)
     
