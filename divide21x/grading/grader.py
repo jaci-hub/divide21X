@@ -117,9 +117,41 @@ class Grader(Evaluator):
         # log
         if self.logger.info not in self.logger.episode_log:
             self.logger.episode_log.append(self.logger.info)
+        self.logger.save_episode()
         
         return {
             "action_grade": round(float(self.action_grade), 2),
             "state_grade": round(float(self.state_grade), 2),
             "overall_grade": round(float(self.overall_grade), 2),
         }
+    
+    def grade_submission2(self):
+        """
+        grade an LLM submission state against ground truth.
+
+        Returns
+        -------
+        float
+        """
+        
+        # check inspection results
+        #   (1) State passed
+        if self.state_passed():
+            self.state_grade = max(0, self.ground_truth_state_score - self.points_to_deduct)
+            message = "State passed the inspection."
+            self.logger.add_info(STATE, NOTE, message)
+            self.logger.add_info(STATE, GRADE, self.state_grade)
+            
+        #   (2) State failed
+        else:
+            self.state_grade = 0
+            message = "State failed the inspection."
+            self.logger.add_info(STATE, WARNING, message)
+            self.logger.add_info(STATE, GRADE, self.state_grade)
+            
+        # log
+        if self.logger.info not in self.logger.episode_log:
+            self.logger.episode_log.append(self.logger.info)
+        self.logger.save_episode()
+        
+        return round(float(self.state_grade), 2)

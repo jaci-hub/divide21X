@@ -7,7 +7,7 @@ import math
 from divide21x.utils.logger import EpisodeLogger
 
 
-BASE_DIR='./divide21x/divide21env_simulator/logs'
+BASE_DIR='./divide21x/simulator/logs'
 
 
 class Divide21EnvSimulator(gym.Env):
@@ -28,10 +28,7 @@ class Divide21EnvSimulator(gym.Env):
         self.logger = EpisodeLogger(BASE_DIR)
     
     def reset(self, *, seed=None, options=None):
-        if self.given_obs is None:
-            obs, info = self.base_env.reset(seed=seed, options=options)
-        else:
-            obs, info = self.base_env._manual_reset(seed=seed, obs=self.given_obs)
+        obs, info = self.base_env.reset(seed=seed, options=options)
         self.state = obs
         self.logger = EpisodeLogger(BASE_DIR)
         return obs, info
@@ -125,10 +122,16 @@ class Divide21EnvSimulator(gym.Env):
         #   (2)
         state_after_action_decoded = self._decode_state(obs)
         
+        action_log = {
+            "division": bool(action["division"]),
+            "digit": int(action["digit"]),
+            "rindex": int(action["rindex"]) if not bool(action["division"]) else None
+        }
+        
         # Log transition
         self.logger.episode_log.append({
             "state_before_action": state_before_action_decoded,
-            "action": action,
+            "action": action_log,
             "state_after_action": state_after_action_decoded,
             "reward": reward,
             "terminated": terminated,

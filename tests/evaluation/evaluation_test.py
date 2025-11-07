@@ -26,7 +26,6 @@ def test_action():
     evaluator.compare_actions(action1, action2)
     # evaluator.action_generates_state()
     
-    evaluator.logger.save_episode()
 
 def test_state():
     # given state
@@ -57,9 +56,7 @@ def test_state():
     evaluator = Evaluator(state=state)
     evaluator.compare_states(state1, state2)
     # evaluator.action_generates_state()
-    
-    evaluator.logger.save_episode()
-    
+        
 
 if __name__ == "__main__":    
     test_action()

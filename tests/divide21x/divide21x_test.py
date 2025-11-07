@@ -18,4 +18,7 @@ if __name__ == "__main__":
         "player_turn": 0
     }
     
-    env = Divide21X(action=action, state=state)
+    env = Divide21X(state=state)
+    env.start()
+        
+    print(env.get_result())

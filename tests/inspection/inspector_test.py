@@ -4,9 +4,9 @@ from divide21x.inspection.inspector import Inspector
 if __name__ == "__main__":
     # action
     action = {
-        "division": 1,
-        "digit": 7,
-        "rindex": 0
+        "division": True,
+        "digit": 4,
+        "rindex": None
     }
     
     # state
@@ -19,7 +19,6 @@ if __name__ == "__main__":
     }
     
     # initialize inspector
-    inspector = Inspector(action, state)
+    inspector = Inspector(action=action, state=state)
     inspector.inspect_all()
-    inspector.logger.save_episode()
     

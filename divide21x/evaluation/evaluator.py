@@ -18,6 +18,7 @@ import gymnasium as gym
 from gymnasium import spaces
 import divide21env
 from divide21env.envs.divide21_env import Divide21Env
+from divide21x.challenge_maker.challenge_maker import ChallengeMaker
 from divide21x.inspection.inspector import Inspector
 from divide21x.simulator.divide21env_simulator import Divide21EnvSimulator
 import numpy as np
@@ -64,7 +65,7 @@ class Evaluator(Inspector):
         self.points_to_deduct = 0
         self.ground_truth_action_score = 0
         self.ground_truth_state_score = 0
-                
+        
         # Logging
         self.logger = EpisodeLogger(BASE_DIR)
         
@@ -82,6 +83,19 @@ class Evaluator(Inspector):
             
             # compare to ground truth
             self.compare_to_ground_truth()
+            
+        elif self.state_passed():
+            '''
+            ---------- ONLY THIS PART WILL RUN BECAUSE ACTION=None ----------
+                THIS IS FOR TESTING Problem design:
+                    State_x + Action_y = State_z
+                    State_a + Action_b = ?
+            '''
+            # compare to ground truth
+            self.compare_to_ground_truth2()
+        
+        # save logs
+        self.logger.save_episode()
     
     def compare_actions(self, given_action1=None, given_action2=None):
         '''
@@ -307,6 +321,24 @@ class Evaluator(Inspector):
         
         # set ground truth score
         self.ground_truth_action_score = action_similarity_score
+        self.ground_truth_state_score = states_similarity_score
+    
+    def compare_to_ground_truth2(self):
+        '''
+        checks if the LLM given state is actually generated
+        '''
+        # get challenge state and action
+        challenge_maker = ChallengeMaker()
+        challenge_maker_state = challenge_maker.get_state()
+        challenge_maker_action = challenge_maker.get_action()
+        # generate state from the action given in the challenge
+        divide21env_simulator = Divide21EnvSimulator(given_obs=challenge_maker_state)
+        obs, reward, terminated, truncated, info = divide21env_simulator.step(challenge_maker_action)
+        ground_truth_state = divide21env_simulator._decode_state(obs)
+        
+        # compare states
+        states_are_equivalent, states_similarity_score = self.compare_states(self.state, ground_truth_state)
+        
         self.ground_truth_state_score = states_similarity_score
         
         

@@ -63,7 +63,7 @@ class Inspector():
             message = f"Action dictionary must have exactly these keys: {', '.join(expected_keys)}."
             self.logger.add_info(ACTION, CRITICAL, message)
         else:
-            # get attributes
+            # get key values
             if self.action["division"] in [0, 1, True, False]:
                 self.division = bool(self.action["division"])
             if self.action["digit"] in range(0, 10):
@@ -82,9 +82,9 @@ class Inspector():
                 message = "Digit must be between 0-9."
                 self.logger.add_info(ACTION, CRITICAL, message)
             # check rindex
-            elif self.rindex is None:
+            elif self.rindex is None and self.division is None:
                 self.action_score -= 7
-                message = "Rindex must be an integer greater than or equal to 0."
+                message = "*Rindex must be an integer greater than or equal to 0."
                 self.logger.add_info(ACTION, CRITICAL, message)
                 
             # Division attempt
@@ -206,11 +206,13 @@ class Inspector():
                                 self.logger.add_info(STATE, CRITICAL, message)
                                 break
                             #   is_current_turn
-                            elif not (isinstance(player["is_current_turn"], (int, np.integer)) and 0 <= player["is_current_turn"] < len(self.state["players"])):
+                            elif not (isinstance(player["is_current_turn"], (int, np.integer)) and 0 <= player["is_current_turn"] <= 1):
                                 self.state_score -= 4
-                                message = "The player is the id of that player, so it must be a non-negative integer less than the number of players."
+                                message = "is_current_turn must be 1 or 0, which means that it is the player's turn or not, respectivelly."
                                 self.logger.add_info(STATE, CRITICAL, message)
                                 break
+                            # assign valid value for players
+                            self.players = self.state["players"]
             else:
                 self.state_score -= 7
                 message = "players must be a Python list."
@@ -237,6 +239,7 @@ class Inspector():
         '''
         self.inspect_action()
         self.inspect_state()
+        self.logger.save_episode()
     
     def get_action_score(self):
         return self.action_score
