@@ -332,7 +332,11 @@ class Evaluator(Inspector):
         challenge_maker_state = challenge_maker.get_state()
         challenge_maker_action = challenge_maker.get_action()
         # generate state from the action given in the challenge
-        divide21env_simulator = Divide21EnvSimulator(given_obs=challenge_maker_state)
+        divide21env_simulator = Divide21EnvSimulator()
+        options = {
+            'obs': challenge_maker_state
+        }
+        obs, info = divide21env_simulator.reset(options=options)
         obs, reward, terminated, truncated, info = divide21env_simulator.step(challenge_maker_action)
         ground_truth_state = divide21env_simulator._decode_state(obs)
         
