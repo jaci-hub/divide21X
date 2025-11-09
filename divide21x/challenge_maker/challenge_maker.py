@@ -1,9 +1,12 @@
+import json
+import os
 import datetime, hashlib, random
 from divide21x.simulator.divide21env_simulator import Divide21EnvSimulator
 from divide21x.utils.logger import EpisodeLogger
 
 
 BASE_DIR='./divide21x/challenge_maker/logs'
+CHALLENGES_DIR = './divide21x/challenges'
 # categories
 CHALLENGE = 'challenge'
 # types
@@ -60,8 +63,8 @@ class ChallengeMaker():
 
         # Generate the deterministic challenge
         #   get hour to help model digits
-        hour = int(date_hour_str[date_hour_str.index('T') + 1:])
-        hour_2 = hour + 2 # to avoid digits < 2
+        hour = date_hour_str[date_hour_str.index('T') + 1:]
+        hour_2 = int(hour) + 2 # to avoid digits < 2
         #   get player number between 2 and hour+2
         players = random.randint(2, hour_2)
         #   set state
@@ -134,6 +137,36 @@ class ChallengeMaker():
         self.logger.add_info(CHALLENGE, HASH, self.challenge_hash)
         self.logger.add_info(CHALLENGE, STATE, self.state)
         self.logger.add_info(CHALLENGE, ACTION, self.action)
+        
+        # place challenge in the challenges dir
+        challenge_dir = os.path.join(CHALLENGES_DIR, date_hour_str)
+        os.makedirs(challenge_dir, exist_ok=True)
+        challenge_name = hour + '.json'
+        challenge_file = os.path.join(challenge_dir, challenge_name)
+        challenge_name_tmp = hour + '.json.tmp'
+        challenge_file_tmp = os.path.join(challenge_dir, challenge_name_tmp)
+        # build the challenge dict
+        # (1) examples
+        challenge = {}
+        challenge["example_1"] = {
+            "initial_state": self.digit_change_example_state_1,
+            "action": self.digit_change_example_action,
+            "final_state": self.digit_change_example_state_2,
+        }
+        challenge["example_2"] = {
+            "initial_state": self.division_example_state_1,
+            "action": self.division_example_action,
+            "final_state": self.division_example_state_2,
+        }
+        # (2) challenge
+        challenge["challenge"] = {
+            "initial_state": self.state,
+            "action": self.action
+        }
+        # make the challenge file
+        with open(challenge_file_tmp, 'w') as tmp_file:
+            json.dump(challenge, tmp_file, indent=4)
+        os.rename(challenge_file_tmp, challenge_file)
         
         # log
         if self.logger.info not in self.logger.episode_log:
