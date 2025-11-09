@@ -21,17 +21,52 @@ HASH = 'hash'
 
 class ChallengeMaker():
     def __init__(self):
-        self.digit_change_example_state_1 = None
-        self.digit_change_example_action = None
-        self.digit_change_example_state_2 = None
+        # Challenge examples
+        self.digit_change_example_state_1 = {
+            "s": 43,
+            "d": 45,
+            "a": {0: [0, 1, 2, 4, 6, 7, 8, 9], 1: [1, 2, 3, 5, 6, 7, 8, 9]},
+            "p": [{"pi": 0, "ps": -6, "pt": 0}, {"pi": 1, "ps": 0, "pt": 1}],
+            "t": 1
+        }
+        self.digit_change_example_action = {
+            "dv": False,
+            "dg": 2,
+            "ri": 0
+        }
+        self.digit_change_example_state_2 = {
+            "s": 43,
+            "d": 42,
+            "a": {0: [0, 1, 4, 6, 7, 8, 9], 1: [1, 2, 3, 5, 6, 7, 8, 9]},
+            "p": [{"pi": 0, "ps": -6, "pt": 1}, {"pi": 1, "ps": 0, "pt": 0}],
+            "t": 0
+        }
         
-        self.division_example_state_1 = None
-        self.division_example_action = None
-        self.division_example_state_2 = None
+        self.division_example_state_1 = {
+            "s": 523,
+            "d": 195,
+            "a": {0: [0, 1, 2, 4, 6, 7, 8, 9], 1: [0, 1, 3, 4, 5, 6, 7], 2: [2, 3, 4, 6, 7, 8, 9]},
+            "p": [{"pi": 0, "ps": -27, "pt": 0}, {"pi": 1, "ps": -11, "pt": 0}, {"pi": 2, "ps": -16, "pt": 0}, {"pi": 3, "ps": 3, "pt": 1}],
+            "t": 3
+        }
+        self.division_example_action = {
+            "dv": True,
+            "dg": 3,
+            "ri": None
+        }
+        self.division_example_state_2 = {
+            "s": 523,
+            "d": 65,
+            "a": {0: [0, 1, 2, 4, 6, 7, 8, 9], 1: [1, 3, 4, 5, 7]},
+            "p": [{"pi": 0, "ps": -27, "pt": 0}, {"pi": 1, "ps": -11, "pt": 0}, {"pi": 2, "ps": -16, "pt": 0}, {"pi": 3, "ps": 6, "pt": 1}],
+            "t": 3
+        }
         
+        # challenge state and action
         self.state = None
         self.action = None
         
+        # challenge id and hash
         self.challenge_id = None
         self.challenge_hash = None
         
