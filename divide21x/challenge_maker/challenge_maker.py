@@ -13,6 +13,7 @@ CRITICAL = 'critical'
 WARNING = 'warning'
 NOTE = 'note'
 ID = 'id'
+HASH = 'hash'
 
 
 class ChallengeMaker():
@@ -29,6 +30,7 @@ class ChallengeMaker():
         self.action = None
         
         self.challenge_id = None
+        self.challenge_hash = None
         
         # Logging
         self.logger = EpisodeLogger(BASE_DIR)
@@ -52,6 +54,7 @@ class ChallengeMaker():
         date_hour_str = utc_datetime[:13]  # e.g. "2025-11-04T15"
 
         # Create a deterministic seed based on the string
+        challenge_hash = hashlib.sha256(date_hour_str.encode()).hexdigest()
         seed = int(hashlib.sha256(date_hour_str.encode()).hexdigest(), 16) % (10**8)
         random.seed(seed)
 
@@ -65,10 +68,9 @@ class ChallengeMaker():
         divide21env_simulator = Divide21EnvSimulator(digits=hour_2, players=players)
         obs, info = divide21env_simulator.reset(seed=seed)
         
-        #   PLAY FOR A BIT - this prevents the initial state from always being given
+        #   play for at least 100 actions - this prevents the initial state from always being given
         state_collection = []
-        num_steps = random.randint(0, hour)
-        for i in range(num_steps):
+        for i in range(100):
             # create action
             division = bool(random.randint(0, 1))
             action = {
@@ -104,17 +106,32 @@ class ChallengeMaker():
             "digit": digit,
             "rindex": rindex
         }
-
-        # Attach a unique challenge ID for reproducibility
-        id = utc_datetime
-        id = list(id)
-        random.shuffle(id)
-        id = ''.join(filter(str.isdigit, id))
-        self.challenge_id = id
+        
+        # make sure the state and action follow the schema
+        # (1) state
+        self.state["s"] = self.state.pop("static_number")
+        self.state["d"] = self.state.pop("dynamic_number")
+        self.state["a"] = self.state.pop("available_digits_per_rindex")
+        self.state["p"] = self.state.pop("players")
+        #   go through each player dict and update key name
+        for player in self.state["p"]:
+            player["pi"] = player.pop("id")
+            player["ps"] = player.pop("score")
+            player["pt"] = player.pop("is_current_turn")
+        self.state["t"] = self.state.pop("player_turn")
+        # (2) action
+        self.action["dv"] = self.action.pop("division")
+        self.action["dg"] = self.action.pop("digit")
+        self.action["ri"] = self.action.pop("rindex")
+        
+        # Attach a unique challenge ID and hash
+        self.challenge_id = date_hour_str
+        self.challenge_hash = challenge_hash
 
         message = "Challenge created."
         self.logger.add_info(CHALLENGE, NOTE, message)
         self.logger.add_info(CHALLENGE, ID, self.challenge_id)
+        self.logger.add_info(CHALLENGE, HASH, self.challenge_hash)
         self.logger.add_info(CHALLENGE, STATE, self.state)
         self.logger.add_info(CHALLENGE, ACTION, self.action)
         
