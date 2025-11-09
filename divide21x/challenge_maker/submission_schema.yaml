@@ -1,0 +1,18 @@
+{
+  "final_state": {
+    "s": int,
+    "d": int,
+    "a": {
+      int: [int, int, ...]
+    },
+    "p": [
+      {
+        "pi": int,
+        "ps": int,
+        "pt": int
+      },
+      ...
+    ],
+    "t": int
+  }
+}

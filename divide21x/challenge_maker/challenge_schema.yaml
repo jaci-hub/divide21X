@@ -1,0 +1,103 @@
+{
+  "example_1": {
+    "initial_state": {
+      "s": int,
+      "d": int,
+      "a": {
+        int: [int, int, ...]
+      },
+      "p": [
+        {
+          "pi": int,
+          "ps": int,
+          "pt": int
+        },
+        ...
+      ],
+      "t": int
+    },
+    "action": {
+      "dv": int,
+      "dg": int,
+      "ri": int | null
+    },
+    "final_state": {
+      "s": int,
+      "d": int,
+      "a": {
+        int: [int, int, ...]
+      },
+      "p": [
+        {
+          "pi": int,
+          "ps": int,
+          "pt": int
+        },
+        ...
+      ],
+      "t": int
+    }
+  },
+  "example_2": {
+    "initial_state": {
+      "s": int,
+      "d": int,
+      "a": {
+        int: [int, int, ...]
+      },
+      "p": [
+        {
+          "pi": int,
+          "ps": int,
+          "pt": int
+        },
+        ...
+      ],
+      "t": int
+    },
+    "action": {
+      "dv": int,
+      "dg": int,
+      "ri": int | null
+    },
+    "final_state": {
+      "s": int,
+      "d": int,
+      "a": {
+        int: [int, int, ...]
+      },
+      "p": [
+        {
+          "pi": int,
+          "ps": int,
+          "pt": int
+        },
+        ...
+      ],
+      "t": int
+    }
+  },
+  "challenge": {
+    "initial_state": {
+      "s": int,
+      "d": int,
+      "a": {
+        int: [int, int, ...]
+      },
+      "p": [
+        {
+          "pi": int,
+          "ps": int,
+          "pt": int
+        },
+        ...
+      ],
+      "t": int
+    },
+    "action": {
+      "dv": int,
+      "dg": int,
+      "ri": int | null
+    }
+  }
+}

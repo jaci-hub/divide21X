@@ -4,7 +4,6 @@
         "dg": int,
         "ri": int | null
     },
-
     "state": {
         "s": int,
         "d": int,
