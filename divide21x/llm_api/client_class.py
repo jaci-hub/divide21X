@@ -2,6 +2,19 @@ import os
 import json
 import importlib
 from typing import Optional
+from divide21x.utils.logger import EpisodeLogger
+
+
+# base dir
+BASE_DIR = './divide21x/llm_api/logs'
+# categories
+MODEL = 'model'
+API = 'api'
+CHAT = 'chat'
+# types
+CRITICAL = 'critical'
+WARNING = 'warning'
+
 
 class ModelClient:
     def __init__(self, model_id: str, json_path: str = "divide21x/llm_api/registry.json"):
@@ -9,20 +22,36 @@ class ModelClient:
         model_id: matches the "id" field in the JSON registry
         json_path: path to your JSON registry file
         """
+        # Logging
+        self.logger = EpisodeLogger(BASE_DIR)
+        
         with open(json_path, "r") as f:
             self.registry = json.load(f)
 
         entry = next((m for m in self.registry if m["id"] == model_id), None)
         if entry is None:
-            raise ValueError(f"Model with id '{model_id}' not found in registry.")
+            message = f"Model with id '{model_id}' not found in registry."
+            self.logger.add_info(MODEL, CRITICAL, message)
+            # log
+            if self.logger.info not in self.logger.episode_log:
+                self.logger.episode_log.append(self.logger.info)
+            self.logger.save_episode()
+            return
 
         self.entry = entry
         self.model_name = entry.get("model")
         self.temperature = entry.get("temperature", 0.0)
         self.api_key = os.environ.get(entry.get("api_key_env"))
+        self.client = None
 
         if not self.api_key:
-            raise ValueError(f"API key for {entry['provider']} not found in environment variable {entry['api_key_env']}")
+            message = f"API key for {entry['provider']} not found in environment variable {entry['api_key_env']}"
+            self.logger.add_info(API, CRITICAL, message)
+            # log
+            if self.logger.info not in self.logger.episode_log:
+                self.logger.episode_log.append(self.logger.info)
+            self.logger.save_episode()
+            return
 
         # Dynamic import
         module = importlib.import_module(entry["import_module"])
@@ -39,7 +68,13 @@ class ModelClient:
         # Prepare call args
         chat_method_name = self.entry.get("chat_method")
         if not chat_method_name:
-            raise ValueError(f"chat_method not specified for {self.entry['id']}")
+            message = f"chat_method not specified for {self.entry['id']}"
+            self.logger.add_info(CHAT, CRITICAL, message)
+            # log
+            if self.logger.info not in self.logger.episode_log:
+                self.logger.episode_log.append(self.logger.info)
+            self.logger.save_episode()
+            return
 
         method = getattr(self.client, chat_method_name)
 

@@ -3,21 +3,21 @@ from divide21x.challenge_maker.challenge_maker import ChallengeMaker
 from divide21x.llm_api.client_class import ModelClient
 from divide21x.utils.util import get_utc_date, get_utc_datetime, get_utc_hour
 
-if __name__ == "__main__":
-    # create challenge if it does not exist
-    challenge_maker = ChallengeMaker()
-    challenge_maker.make_challenge()
-    
+
+
+def test_llm(llm_id):
     # Load LLM registry
     with open("divide21x/llm_api/registry.json", "r") as f:
         registry = json.load(f)
 
     # Pick a model by ID
-    model_info = next(item for item in registry if item["id"] == "openai-o1")
+    model_info = next(item for item in registry if item["id"] == llm_id)
 
     client = ModelClient(
         model_id=model_info["id"]
     )
+    if client.client is None:
+        return
 
     # Load the challenge JSON
     utc_datetime = get_utc_datetime()
@@ -53,3 +53,13 @@ if __name__ == "__main__":
     # Ask the LLM
     result = client.chat(prompt, system_prompt=system_prompt)
     print("LLM predicted final_state:\n", result)
+
+
+
+if __name__ == "__main__":
+    # create challenge if it does not exist
+    challenge_maker = ChallengeMaker()
+    challenge_maker.make_challenge()
+    
+    llm_id = "openai-o1"
+    test_llm(llm_id)
