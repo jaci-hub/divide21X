@@ -61,5 +61,5 @@ if __name__ == "__main__":
     challenge_maker = ChallengeMaker()
     challenge_maker.make_challenge()
     
-    llm_id = "openai-o1"
+    llm_id = "google-gemini25-pro"
     test_llm(llm_id)
