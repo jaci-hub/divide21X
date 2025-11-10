@@ -6,3 +6,6 @@ dist/
 build/
 __pycache__/
 *.pyc
+.env
+*.key
+*.secrets.json
