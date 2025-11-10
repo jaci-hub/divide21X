@@ -29,10 +29,10 @@
         "notes": "OpenAI's multimodal flagship model. Fast and accurate."
     },
     {
-        "id": "openai-o1-preview",
+        "id": "openai-o1",
         "provider": "openai",
-        "model": "o1-preview",
-        "alias": "GPT-o1 Preview",
+        "model": "o1",
+        "alias": "GPT-o1",
         "category": "proprietary",
         "family": "OpenAI o1",
         "release_date": "2024-09",
@@ -49,7 +49,7 @@
         "client_class": "OpenAI",
         "chat_method": "chat.completions.create",
         "extra_args": {
-            "model": "o1-preview",
+            "model": "o1",
             "messages": [
                 {"role": "system", "content": "{system_prompt}"},
                 {"role": "user", "content": "{prompt}"}
