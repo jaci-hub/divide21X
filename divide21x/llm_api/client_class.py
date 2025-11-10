@@ -17,7 +17,7 @@ WARNING = 'warning'
 
 
 class ModelClient:
-    def __init__(self, model_id: str, json_path: str = "divide21x/llm_api/registry.json"):
+    def __init__(self, registry_entry=None):
         """
         model_id: matches the "id" field in the JSON registry
         json_path: path to your JSON registry file
@@ -25,12 +25,8 @@ class ModelClient:
         # Logging
         self.logger = EpisodeLogger(BASE_DIR)
         
-        with open(json_path, "r") as f:
-            self.registry = json.load(f)
-
-        entry = next((m for m in self.registry if m["id"] == model_id), None)
-        if entry is None:
-            message = f"Model with id '{model_id}' not found in registry."
+        if registry_entry is None:
+            message = f"No entry from registry.json provided."
             self.logger.add_info(MODEL, CRITICAL, message)
             # log
             if self.logger.info not in self.logger.episode_log:
@@ -38,14 +34,15 @@ class ModelClient:
             self.logger.save_episode()
             return
 
-        self.entry = entry
-        self.model_name = entry.get("model")
-        self.temperature = entry.get("temperature", 0.0)
-        self.api_key = os.environ.get(entry.get("api_key_env"))
+        self.entry = registry_entry
+        self.model_name = registry_entry.get("model")
+        self.model_alias = registry_entry.get("alias")
+        self.temperature = registry_entry.get("temperature", 0.0)
+        self.api_key = os.environ.get(registry_entry.get("api_key_env"))
         self.client = None
 
         if not self.api_key:
-            message = f"API key for {entry['provider']} not found in environment variable {entry['api_key_env']}"
+            message = f"API key for {registry_entry['provider']} not found in environment variable {registry_entry['api_key_env']}"
             self.logger.add_info(API, CRITICAL, message)
             # log
             if self.logger.info not in self.logger.episode_log:
@@ -54,11 +51,11 @@ class ModelClient:
             return
 
         # Dynamic import
-        module = importlib.import_module(entry["import_module"])
-        client_cls = getattr(module, entry["client_class"])
+        module = importlib.import_module(registry_entry["import_module"])
+        client_cls = getattr(module, registry_entry["client_class"])
 
         # Initialize client
-        init_kwargs = entry.get("init_args", {"api_key": self.api_key})
+        init_kwargs = registry_entry.get("init_args", {"api_key": self.api_key})
         self.client = client_cls(**init_kwargs)
 
     def chat(self, prompt: str, system_prompt: Optional[str] = None, temperature: Optional[float] = None) -> str:
