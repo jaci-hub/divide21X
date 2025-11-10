@@ -1,7 +1,7 @@
 import json
 from divide21x.challenge_maker.challenge_maker import ChallengeMaker
 from divide21x.llm_api.client_class import ModelClient
-from divide21x.llm_api.requestor import get_prompt
+from divide21x.llm_api.requestor import Requestor
 from divide21x.utils.logger import EpisodeLogger
 from divide21x.utils.util import get_llm_registry
 
@@ -23,6 +23,9 @@ WARNING = 'warning'
 # Logging
 logger = EpisodeLogger(BASE_DIR)
 
+# requestor
+requestor = Requestor()
+
 
 def test_llm(registry_entry):
     client = ModelClient(
@@ -32,7 +35,7 @@ def test_llm(registry_entry):
         return
     
     # get prompt
-    prompt, system_prompt = get_prompt()
+    prompt, system_prompt = requestor.get_prompt()
 
     # Ask the LLM
     answer = client.chat(prompt, system_prompt=system_prompt)
