@@ -1,17 +1,50 @@
-from divide21x.llm_api.llm_client import ModelClient
+import json
+from divide21x.llm_api.client_class import ModelClient
+from divide21x.utils.util import get_utc_date, get_utc_datetime, get_utc_hour
 
-client = ModelClient(provider="openai", model="gpt-4o")
+if __name__ == "__main__":
+    # Load LLM registry
+    with open("divide21x/llm_api/registry.json", "r") as f:
+        registry = json.load(f)
 
-prompt = """
-Given the Divide21 game state:
-{
-    "static_number": 19,
-    "dynamic_number": 59,
-    "available_digits_per_rindex": {0: [1, 2, 3], 1: [4, 5, 6]},
-    "players": [{"id": 0, "score": 0, "is_current_turn": 1}],
-    "player_turn": 0
-}
-Suggest the next best action as a JSON object with keys: division, digit, rindex.
-"""
+    # Pick a model by ID
+    model_info = next(item for item in registry if item["id"] == "openai-gpt4o")
 
-print(client.chat(prompt))
+    client = ModelClient(
+        provider=model_info["provider"],
+        model=model_info["model"]
+    )
+
+    # Load the challenge JSON
+    utc_datetime = get_utc_datetime()
+    hour = str(get_utc_hour())
+    hour_2 = int(hour) + 2
+    date = str(get_utc_date())
+    
+    with open(f"divide21x/challenges/{date}/{hour_2}.json", "r") as f:
+        challenge_data = json.load(f)
+
+    # Construct the few-shot + challenge prompt
+    prompt_lines = []
+    for example_key in ["example_1", "example_2"]:
+        ex = challenge_data[example_key]
+        prompt_lines.append(f"Example:\nInitial state: {json.dumps(ex['initial_state'])}\n"
+                            f"Action: {json.dumps(ex['action'])}\n"
+                            f"Final state: {json.dumps(ex['final_state'])}\n")
+
+    # Add the challenge (no final_state)
+    challenge = challenge_data["challenge"]
+    prompt_lines.append(f"Challenge:\nInitial state: {json.dumps(challenge['initial_state'])}\n"
+                        f"Action: {json.dumps(challenge['action'])}\n"
+                        f"Final state: ??? (compute this and return as JSON)")
+
+    prompt = "\n\n".join(prompt_lines)
+
+    system_prompt = (
+        "Given an initial state and an action, "
+        "compute the resulting final state. ONLY return a valid JSON object."
+    )
+
+    # Ask the LLM
+    result = client.chat(prompt, system_prompt=system_prompt)
+    print("LLM predicted final_state:\n", result)
