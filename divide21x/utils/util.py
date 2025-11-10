@@ -44,7 +44,7 @@ def get_llm_registry():
     # Load LLM registry
     registry = None
     try:
-        with open("divide21x/llm_api/registry.json", "r") as f:
+        with open("divide21x/llm_api/registry_budget.json", "r") as f: # update to the main registry.json file
             registry = json.load(f)
     except Exception as e:
         registry = None
