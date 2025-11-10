@@ -13,11 +13,11 @@ if __name__ == "__main__":
         registry = json.load(f)
 
     # Pick a model by ID
-    model_info = next(item for item in registry if item["id"] == "openai-gpt4o")
+    model_info = next(item for item in registry if item["id"] == "openai-o1")
 
-    # client = ModelClient(
-    #     model_id=model_info["id"]
-    # )
+    client = ModelClient(
+        model_id=model_info["id"]
+    )
 
     # Load the challenge JSON
     utc_datetime = get_utc_datetime()
@@ -50,6 +50,6 @@ if __name__ == "__main__":
     )
 
     print(prompt)
-    # # Ask the LLM
-    # result = client.chat(prompt, system_prompt=system_prompt)
-    # print("LLM predicted final_state:\n", result)
+    # Ask the LLM
+    result = client.chat(prompt, system_prompt=system_prompt)
+    print("LLM predicted final_state:\n", result)
