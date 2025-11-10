@@ -16,8 +16,7 @@ if __name__ == "__main__":
     model_info = next(item for item in registry if item["id"] == "openai-gpt4o")
 
     client = ModelClient(
-        provider=model_info["provider"],
-        model=model_info["model"]
+        model_id=model_info["id"]
     )
 
     # Load the challenge JSON
