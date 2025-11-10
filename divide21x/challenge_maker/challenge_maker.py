@@ -91,6 +91,25 @@ class ChallengeMaker():
         hour_2 = hour + 2
         date = str(get_utc_date())
         date_hour_str = utc_datetime[:13]  # e.g. "2025-11-04T15"
+        
+        # place challenge in the challenges dir
+        challenge_dir = os.path.join(CHALLENGES_DIR, date)
+        os.makedirs(challenge_dir, exist_ok=True)
+        challenge_name = str(hour) + '.json'
+        challenge_file = os.path.join(challenge_dir, challenge_name)
+        challenge_name_tmp = str(hour) + '.json.tmp'
+        challenge_file_tmp = os.path.join(challenge_dir, challenge_name_tmp)
+        
+        # check if challenge already exists
+        if os.path.isfile(challenge_file):
+            message = "Challenge was already created."
+            self.logger.add_info(CHALLENGE, WARNING, message)
+            # log
+            if self.logger.info not in self.logger.episode_log:
+                self.logger.episode_log.append(self.logger.info)
+                
+            self.logger.save_episode()
+            return
 
         # Create a deterministic seed based on the string
         challenge_hash = hashlib.sha256(date_hour_str.encode()).hexdigest()
@@ -170,13 +189,6 @@ class ChallengeMaker():
         self.logger.add_info(CHALLENGE, STATE, self.state)
         self.logger.add_info(CHALLENGE, ACTION, self.action)
         
-        # place challenge in the challenges dir
-        challenge_dir = os.path.join(CHALLENGES_DIR, date)
-        os.makedirs(challenge_dir, exist_ok=True)
-        challenge_name = str(hour) + '.json'
-        challenge_file = os.path.join(challenge_dir, challenge_name)
-        challenge_name_tmp = str(hour) + '.json.tmp'
-        challenge_file_tmp = os.path.join(challenge_dir, challenge_name_tmp)
         # build the challenge dict
         # (1) examples
         challenge = {}
