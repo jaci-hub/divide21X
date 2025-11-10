@@ -1,4 +1,5 @@
 import datetime
+import json
 
 def get_utc_date(as_iso=True):
     """
@@ -35,3 +36,17 @@ def get_utc_hour():
     """
     utc_dt = get_utc_datetime(as_iso=False)
     return utc_dt.hour
+
+def get_llm_registry():
+    '''
+    returns the registry.json data
+    '''
+    # Load LLM registry
+    registry = None
+    try:
+        with open("divide21x/llm_api/registry.json", "r") as f:
+            registry = json.load(f)
+    except Exception as e:
+        registry = None
+    
+    return registry
