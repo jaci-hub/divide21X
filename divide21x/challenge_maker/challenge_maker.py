@@ -218,3 +218,6 @@ class ChallengeMaker():
             
         self.logger.save_episode()
 
+if __name__ == "__main__":
+    challenge_maker = ChallengeMaker()
+    challenge_maker.make_challenge()
