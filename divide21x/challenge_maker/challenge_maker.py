@@ -3,6 +3,7 @@ import os
 import datetime, hashlib, random
 from divide21x.simulator.divide21env_simulator import Divide21EnvSimulator
 from divide21x.utils.logger import EpisodeLogger
+from divide21x.utils.util import get_utc_date, get_utc_datetime, get_utc_hour
 
 
 BASE_DIR='./divide21x/challenge_maker/logs'
@@ -85,10 +86,10 @@ class ChallengeMaker():
         time: datetime or None (defaults to current UTC hour)
         """
         # Use timezone-aware UTC datetime
-        utc_datetime = datetime.datetime.now(datetime.timezone.utc)
-        utc_datetime = utc_datetime.isoformat()
-        
-        # get string representing the year-month-day-hour for deterministic seeding
+        utc_datetime = get_utc_datetime()
+        hour = get_utc_hour()
+        hour_2 = hour + 2
+        date = str(get_utc_date())
         date_hour_str = utc_datetime[:13]  # e.g. "2025-11-04T15"
 
         # Create a deterministic seed based on the string
@@ -96,10 +97,6 @@ class ChallengeMaker():
         seed = int(hashlib.sha256(date_hour_str.encode()).hexdigest(), 16) % (10**8)
         random.seed(seed)
 
-        # Generate the deterministic challenge
-        #   get hour to help model digits
-        hour = date_hour_str[date_hour_str.index('T') + 1:]
-        hour_2 = int(hour) + 2 # to avoid digits < 2
         #   get player number between 2 and hour+2
         players = random.randint(2, hour_2)
         #   set state
@@ -174,11 +171,11 @@ class ChallengeMaker():
         self.logger.add_info(CHALLENGE, ACTION, self.action)
         
         # place challenge in the challenges dir
-        challenge_dir = os.path.join(CHALLENGES_DIR, date_hour_str)
+        challenge_dir = os.path.join(CHALLENGES_DIR, date)
         os.makedirs(challenge_dir, exist_ok=True)
-        challenge_name = hour + '.json'
+        challenge_name = str(hour) + '.json'
         challenge_file = os.path.join(challenge_dir, challenge_name)
-        challenge_name_tmp = hour + '.json.tmp'
+        challenge_name_tmp = str(hour) + '.json.tmp'
         challenge_file_tmp = os.path.join(challenge_dir, challenge_name_tmp)
         # build the challenge dict
         # (1) examples
