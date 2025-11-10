@@ -23,7 +23,7 @@ classifiers = [
 dependencies = [
     "gymnasium>=0.29",
     "numpy>=1.23",
-    "divide21env>=0.2.1",
+    "divide21env>=0.2.5",
 ]
 
 [project.urls]
