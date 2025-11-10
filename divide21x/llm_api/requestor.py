@@ -27,9 +27,17 @@ def get_prompt():
     # get date and time
     date = str(get_utc_date())
     hour = str(get_utc_hour())
+    prompt = None
+    system_prompt = None
     
-    with open(f"divide21x/challenges/{date}/{hour}.json", "r") as f:
-        challenge_data = json.load(f)
+    try:
+        with open(f"divide21x/challenges/{date}/{hour}.json", "r") as f:
+            challenge_data = json.load(f)
+    except FileNotFoundError:
+        challenge_data = None
+        message = "Challenge has not been created yet!"
+        logger.add_info(REQUESTOR, CRITICAL, message)
+        return prompt, system_prompt
 
     # Construct the few-shot + challenge prompt
     prompt_lines = []
@@ -80,9 +88,10 @@ if __name__ == "__main__":
         # get prompt
         prompt, system_prompt = get_prompt()
         
-        # start the requests
-        for registry_entry in registry:
-            start_request(registry_entry, prompt, system_prompt)
+        if prompt and system_prompt:
+            # start the requests
+            for registry_entry in registry:
+                start_request(registry_entry, prompt, system_prompt)
         
         # log
         if logger.info not in logger.episode_log:
