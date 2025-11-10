@@ -4,7 +4,7 @@ import importlib
 from typing import Optional
 
 class ModelClient:
-    def __init__(self, model_id: str, json_path: str = "registry.json"):
+    def __init__(self, model_id: str, json_path: str = "divide21x/llm_api/registry.json"):
         """
         model_id: matches the "id" field in the JSON registry
         json_path: path to your JSON registry file
