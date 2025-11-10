@@ -15,9 +15,9 @@ if __name__ == "__main__":
     # Pick a model by ID
     model_info = next(item for item in registry if item["id"] == "openai-gpt4o")
 
-    client = ModelClient(
-        model_id=model_info["id"]
-    )
+    # client = ModelClient(
+    #     model_id=model_info["id"]
+    # )
 
     # Load the challenge JSON
     utc_datetime = get_utc_datetime()
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     hour_2 = int(hour) + 2
     date = str(get_utc_date())
     
-    with open(f"divide21x/challenges/{date}/{hour_2}.json", "r") as f:
+    with open(f"divide21x/challenges/{date}/{hour}.json", "r") as f:
         challenge_data = json.load(f)
 
     # Construct the few-shot + challenge prompt
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     challenge = challenge_data["challenge"]
     prompt_lines.append(f"Challenge:\nInitial state: {json.dumps(challenge['initial_state'])}\n"
                         f"Action: {json.dumps(challenge['action'])}\n"
-                        f"Final state: ??? (compute this and return as JSON)")
+                        f"Final state: ? (compute this and return as JSON)")
 
     prompt = "\n\n".join(prompt_lines)
 
@@ -49,6 +49,7 @@ if __name__ == "__main__":
         "compute the resulting final state. ONLY return a valid JSON object."
     )
 
-    # Ask the LLM
-    result = client.chat(prompt, system_prompt=system_prompt)
-    print("LLM predicted final_state:\n", result)
+    print(prompt)
+    # # Ask the LLM
+    # result = client.chat(prompt, system_prompt=system_prompt)
+    # print("LLM predicted final_state:\n", result)
