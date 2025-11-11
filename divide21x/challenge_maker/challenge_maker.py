@@ -112,7 +112,6 @@ class ChallengeMaker():
             return
 
         # Create a deterministic seed based on the string
-        challenge_hash = hashlib.sha256(date_hour_str.encode()).hexdigest()
         seed = int(hashlib.sha256(date_hour_str.encode()).hexdigest(), 16) % (10**8)
         random.seed(seed)
 
@@ -178,17 +177,6 @@ class ChallengeMaker():
         self.action["dg"] = self.action.pop("digit")
         self.action["ri"] = self.action.pop("rindex")
         
-        # Attach a unique challenge ID and hash
-        self.challenge_id = date_hour_str
-        self.challenge_hash = challenge_hash
-
-        message = "Challenge created."
-        self.logger.add_info(CHALLENGE, NOTE, message)
-        self.logger.add_info(CHALLENGE, ID, self.challenge_id)
-        self.logger.add_info(CHALLENGE, HASH, self.challenge_hash)
-        self.logger.add_info(CHALLENGE, STATE, self.state)
-        self.logger.add_info(CHALLENGE, ACTION, self.action)
-        
         # build the challenge dict
         # (1) examples
         challenge = {}
@@ -211,6 +199,18 @@ class ChallengeMaker():
         with open(challenge_file_tmp, 'w') as tmp_file:
             json.dump(challenge, tmp_file, indent=4)
         os.rename(challenge_file_tmp, challenge_file)
+        
+        # log a unique challenge ID and hash
+        self.challenge_id = date_hour_str
+        to_hash = self.challenge_id + str(challenge)
+        self.challenge_hash = hashlib.sha256(to_hash.encode()).hexdigest()
+        
+        message = "Challenge created."
+        self.logger.add_info(CHALLENGE, NOTE, message)
+        self.logger.add_info(CHALLENGE, ID, self.challenge_id)
+        self.logger.add_info(CHALLENGE, HASH, self.challenge_hash)
+        self.logger.add_info(CHALLENGE, STATE, self.state)
+        self.logger.add_info(CHALLENGE, ACTION, self.action)
         
         # log
         if self.logger.info not in self.logger.episode_log:

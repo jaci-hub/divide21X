@@ -1,6 +1,6 @@
+import hashlib
 import json
 import os
-from divide21x.challenge_maker.challenge_maker import ChallengeMaker
 from divide21x.llm_api.client_class import ModelClient
 from divide21x.utils.logger import EpisodeLogger
 from divide21x.utils.util import get_llm_registry, get_utc_date, get_utc_datetime, get_utc_hour
@@ -17,6 +17,8 @@ PROMPT = 'prompt'
 SYSTEM_PROMPT = 'system_prompt'
 ANSWER = 'answer'
 RESULTS = 'results'
+ID = 'id'
+HASH = 'hash'
 # types
 CRITICAL = 'critical'
 WARNING = 'warning'
@@ -126,6 +128,14 @@ class Requestor():
                     # log
                     message = f'Created results for today [{self.date}]'
                     self.logger.add_info(REQUESTOR, RESULTS, message)
+                    # log a unique challenge ID and hash
+                    utc_datetime = get_utc_datetime()
+                    date_hour_str = utc_datetime[:13]
+                    self.results_id = date_hour_str
+                    to_hash = self.results_id + str(self.results)
+                    self.results_hash = hashlib.sha256(to_hash.encode()).hexdigest()
+                    self.logger.add_info(REQUESTOR, ID, self.results_id)
+                    self.logger.add_info(REQUESTOR, HASH, self.results_hash)
                 else:
                     message = f'No results recorded!'
                     self.logger.add_info(REQUESTOR, CRITICAL, message)
