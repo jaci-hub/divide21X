@@ -39,7 +39,7 @@ class Divide21EnvSimulator(gym.Env):
     
     def _decode_available_digits(self, flat_mask, digits):
         '''
-        Reconstruct the available_digits_per_rindex dictionary from the
+        Reconstruct the 'a' dictionary from the
         flattened mask produced by _encode_available_digits().
 
         Args:
@@ -70,12 +70,12 @@ class Divide21EnvSimulator(gym.Env):
             flat_array (array-like): Flattened 1D list or NumPy array of shape (num_players * 3,).
 
         Returns:
-            list[dict]: List of players, each as {"id": int, "score": int, "is_current_turn": int}.
+            list[dict]: List of players, each as {"i": int, "c": int, "m": int}.
         '''
         # Ensure it's a plain list of ints
         flat_list = list(flat_array)
         
-        # Each player has 3 attributes: [id, score, is_current_turn]
+        # Each player has 3 attributes: [i, c, m]
         num_players = len(flat_list) // 3
         
         players = []
@@ -83,9 +83,9 @@ class Divide21EnvSimulator(gym.Env):
             start = i * 3
             pid, score, turn_flag = flat_list[start:start + 3]
             player = {
-                "id": int(pid),
-                "score": int(score),
-                "is_current_turn": int(turn_flag)
+                "i": int(pid),
+                "c": int(score),
+                "m": int(turn_flag)
             }
             players.append(player)
         
@@ -99,14 +99,14 @@ class Divide21EnvSimulator(gym.Env):
         the observation space attributes from Divide21Env are in numpy variables which are not json compatible, 
         so make sure they are.
         '''
-        decoded_static_number = self._decode_dynamic_number(state["static_number"])
-        decoded_dynamic_number = self._decode_dynamic_number(state["dynamic_number"])
+        decoded_static_number = self._decode_dynamic_number(state["s"])
+        decoded_dynamic_number = self._decode_dynamic_number(state["d"])
         decoded_state = {
-            "static_number": decoded_static_number,
-            "dynamic_number": decoded_dynamic_number,
-            "available_digits_per_rindex": self._decode_available_digits(state["available_digits_per_rindex"], len(str(decoded_dynamic_number))),
-            "players": self._decode_players(state["players"]),
-            "player_turn": self._decode_player_turn(state["player_turn"])
+            "s": decoded_static_number,
+            "d": decoded_dynamic_number,
+            "a": self._decode_available_digits(state["a"], len(str(decoded_dynamic_number))),
+            "p": self._decode_players(state["p"]),
+            "t": self._decode_player_turn(state["t"])
         }
         
         return decoded_state
@@ -121,9 +121,9 @@ class Divide21EnvSimulator(gym.Env):
         state_after_action_decoded = self._decode_state(obs)
         
         action_log = {
-            "division": bool(action["division"]),
-            "digit": int(action["digit"]),
-            "rindex": int(action["rindex"]) if not bool(action["division"]) else None
+            "v": bool(action["v"]),
+            "g": int(action["g"]),
+            "r": int(action["r"]) if not bool(action["v"]) else None
         }
         
         # Log transition

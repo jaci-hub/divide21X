@@ -1,18 +1,3 @@
-"""
-Author: Jacinto Jeje Matamba Quimua
-Date: 11/01/2025
-
-Description:
-------------
-Grader module for Divide21X Phase 1: Action-State benchmark environment
-for faithful strategic reasoning.
-
-Grading is based on:
-    (1) Action Fidelity — how closely the LLM's chosen action matches the ground-truth action.
-    (2) State Fidelity  — how similar the resulting next-state is to the ground-truth next-state.
-
-Both are combined to form an overall Divide21X Phase 1 score.
-"""
 import divide21env
 from divide21env.envs.divide21_env import Divide21Env
 import numpy as np

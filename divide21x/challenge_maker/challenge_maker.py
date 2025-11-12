@@ -27,19 +27,19 @@ class ChallengeMaker():
             "s": 43,
             "d": 45,
             "a": {0: [0, 1, 2, 4, 6, 7, 8, 9], 1: [1, 2, 3, 5, 6, 7, 8, 9]},
-            "p": [{"pi": 0, "ps": -6, "pt": 0}, {"pi": 1, "ps": 0, "pt": 1}],
+            "p": [{"i": 0, "c": -6, "m": 0}, {"i": 1, "c": 0, "m": 1}],
             "t": 1
         }
         self.digit_change_example_action = {
-            "dv": False,
-            "dg": 2,
-            "ri": 0
+            "v": False,
+            "g": 2,
+            "r": 0
         }
         self.digit_change_example_state_2 = {
             "s": 43,
             "d": 42,
             "a": {0: [0, 1, 4, 6, 7, 8, 9], 1: [1, 2, 3, 5, 6, 7, 8, 9]},
-            "p": [{"pi": 0, "ps": -6, "pt": 1}, {"pi": 1, "ps": 0, "pt": 0}],
+            "p": [{"i": 0, "c": -6, "m": 1}, {"i": 1, "c": 0, "m": 0}],
             "t": 0
         }
         
@@ -47,19 +47,19 @@ class ChallengeMaker():
             "s": 523,
             "d": 195,
             "a": {0: [0, 1, 2, 4, 6, 7, 8, 9], 1: [0, 1, 3, 4, 5, 6, 7], 2: [2, 3, 4, 6, 7, 8, 9]},
-            "p": [{"pi": 0, "ps": -27, "pt": 0}, {"pi": 1, "ps": -11, "pt": 0}, {"pi": 2, "ps": -16, "pt": 0}, {"pi": 3, "ps": 3, "pt": 1}],
+            "p": [{"i": 0, "c": -27, "m": 0}, {"i": 1, "c": -11, "m": 0}, {"i": 2, "c": -16, "m": 0}, {"i": 3, "c": 3, "m": 1}],
             "t": 3
         }
         self.division_example_action = {
-            "dv": True,
-            "dg": 3,
-            "ri": None
+            "v": True,
+            "g": 3,
+            "r": None
         }
         self.division_example_state_2 = {
             "s": 523,
             "d": 65,
             "a": {0: [0, 1, 2, 4, 6, 7, 8, 9], 1: [1, 3, 4, 5, 7]},
-            "p": [{"pi": 0, "ps": -27, "pt": 0}, {"pi": 1, "ps": -11, "pt": 0}, {"pi": 2, "ps": -16, "pt": 0}, {"pi": 3, "ps": 6, "pt": 1}],
+            "p": [{"i": 0, "c": -27, "m": 0}, {"i": 1, "c": -11, "m": 0}, {"i": 2, "c": -16, "m": 0}, {"i": 3, "c": 6, "m": 1}],
             "t": 3
         }
         
@@ -127,16 +127,16 @@ class ChallengeMaker():
             # create action
             division = bool(random.randint(0, 1))
             action = {
-                "division": division,
-                "digit": int(random.randint(0, 9)) if not division else int(random.randint(2, 9)),
-                "rindex": int(random.randint(0, hour_2-1)) if not division else None
+                "v": division,
+                "g": int(random.randint(0, 9)) if not division else int(random.randint(2, 9)),
+                "r": int(random.randint(0, hour_2-1)) if not division else None
             }
             # apply action
             obs, reward, done, trunc, info = divide21env_simulator.step(action)
             obs = divide21env_simulator._decode_state(obs)
             state_collection.append(obs)
             # update hour_2
-            hour_2 = len(str(obs["dynamic_number"]))
+            hour_2 = len(str(obs["d"]))
             if done or trunc:
                 # do not append the final state
                 state_collection.pop()
@@ -151,31 +151,14 @@ class ChallengeMaker():
         if division:
             digit = int(random.randint(2, 9))
         else:
-            available_digits_list = self.state["available_digits_per_rindex"][rindex]
+            available_digits_list = self.state["a"][rindex]
             digit = available_digits_list[random.randint(0, len(available_digits_list)-1)]
         
         self.action = {
-            "division": division,
-            "digit": digit,
-            "rindex": rindex
+            "v": division,
+            "g": digit,
+            "r": rindex
         }
-        
-        # make sure the state and action follow the schema
-        # (1) state
-        self.state["s"] = self.state.pop("static_number")
-        self.state["d"] = self.state.pop("dynamic_number")
-        self.state["a"] = self.state.pop("available_digits_per_rindex")
-        self.state["p"] = self.state.pop("players")
-        #   go through each player dict and update key name
-        for player in self.state["p"]:
-            player["pi"] = player.pop("id")
-            player["ps"] = player.pop("score")
-            player["pt"] = player.pop("is_current_turn")
-        self.state["t"] = self.state.pop("player_turn")
-        # (2) action
-        self.action["dv"] = self.action.pop("division")
-        self.action["dg"] = self.action.pop("digit")
-        self.action["ri"] = self.action.pop("rindex")
         
         # build the challenge dict
         # (1) examples

@@ -1,19 +1,5 @@
-"""
-Author: Jacinto Jeje Matamba Quimua
-Date: 11/01/2025
-
-Description:
-------------
-Evaluation module for Divide21X Phase 1: Action-State benchmark environment
-for faithful strategic reasoning.
-
-This module checks the inspection result for the action and the state. 
-    (1) If failed inspection, then they are redirected to the appropriate graders
-        else, the action-state implication/generation is evaluated
-            if implication/generation is False, then points are deducted
-    (2) They are compared to the ground truth action and state.
-        Then redirected to the appropriate graders
-"""
+import json
+import os
 import gymnasium as gym
 from gymnasium import spaces
 import divide21env
@@ -25,15 +11,18 @@ import numpy as np
 import math
 from divide21x.utils.logger import EpisodeLogger
 from divide21x.ground_truth.ground_truth import GroundTruth
+from divide21x.utils.util import get_utc_date, get_utc_datetime, get_utc_hour
 
 
 BASE_DIR='./divide21x/evaluation/logs'
+CHALLENGES_DIR = './divide21x/challenges'
 # categories
 ACTION = 'action'
 STATE = 'state'
 ACTION_STATE = 'action_state'
 ACTION_COMPARISON = 'action_comparison'
 STATE_COMPARISON = 'state_comparison'
+CHALLENGE = 'challenge'
 # types
 CRITICAL = 'critical'
 WARNING = 'warning'
@@ -112,9 +101,9 @@ class Evaluator(Inspector):
         
         action format example:
             action = {
-                "division": 1, # it can be True
-                "digit": 2,
-                "rindex": None
+                "v": 1, # it can be True
+                "g": 2,
+                "r": None
             }
         '''
         # --- Setup ---
@@ -129,7 +118,7 @@ class Evaluator(Inspector):
                 self.logger.episode_log.append(self.logger.info)
             return (False, 0.0)
 
-        expected_keys = {"division", "digit", "rindex"}
+        expected_keys = {"v", "g", "r"}
         if set(action1.keys()) != expected_keys or set(action2.keys()) != expected_keys:
             message = f"Action dictionary must have exactly these keys: {', '.join(expected_keys)}."
             self.logger.add_info(ACTION_COMPARISON, CRITICAL, message)
@@ -141,9 +130,9 @@ class Evaluator(Inspector):
         # --- Normalize ---
         def normalize(a):
             return {
-                "division": bool(a.get("division", False)),
-                "digit": a.get("digit", None),
-                "rindex": a.get("rindex", None)
+                "v": bool(a.get("v", False)),
+                "g": a.get("g", None),
+                "r": a.get("r", None)
             }
 
         a1 = normalize(action1)
@@ -154,15 +143,15 @@ class Evaluator(Inspector):
         matches = 0
 
         # (1) division
-        if a1["division"] == a2["division"]:
+        if a1["v"] == a2["v"]:
             matches += 1
 
         # (2) digit
-        if a1["digit"] == a2["digit"]:
+        if a1["g"] == a2["g"]:
             matches += 1
 
         # (3) rindex
-        if a1["rindex"] == a2["rindex"]:
+        if a1["r"] == a2["r"]:
             matches += 1
 
         # --- Compute final score ---
@@ -181,7 +170,7 @@ class Evaluator(Inspector):
     def compare_states(self, given_state1=None, given_state2=None):
         '''
         compares two states from Divide21 game, and checks if they are equivalent.
-        Note: it cant just do a comparison with "==" because since both of them have lists (the keys of 'available_digits_per_rindex', and also the 'players' key), 
+        Note: it cant just do a comparison with "==" because since both of them have lists (the keys of 'a', and also the 'p' key), 
                 the lists might not be in the same order but still have all the correct elements,
                 which would result in a False negative!
         returns: 
@@ -193,11 +182,11 @@ class Evaluator(Inspector):
         
         state format example:
             state = {
-                "static_number": 19,
-                "dynamic_number": 59,
-                "available_digits_per_rindex": {0: [0, 1, 2, 3, 4, 5, 6, 7, 8], 1: [2, 3, 4, 6, 7, 8, 9]},
-                "players": [{'id': 0, 'score': -13, 'is_current_turn': 1}],
-                "player_turn": 0
+                "s": 19,
+                "d": 59,
+                "a": {0: [0, 1, 2, 3, 4, 5, 6, 7, 8], 1: [2, 3, 4, 6, 7, 8, 9]},
+                "p": [{'i': 0, 'c': -13, 'm': 1}],
+                "t": 0
             }
         '''
         state1 = None
@@ -223,7 +212,7 @@ class Evaluator(Inspector):
             return (False, 0.0)
         
         # --- Early shape check ---
-        expected_keys = {'static_number', 'dynamic_number', 'available_digits_per_rindex', 'players', 'player_turn'}
+        expected_keys = {"s", "d", "a", "p", "t"}
         if set(state1.keys()) != expected_keys or set(state2.keys()) != expected_keys:
             message = f"State dictionary must have exactly these keys: {', '.join(expected_keys)}."
             self.logger.add_info(STATE_COMPARISON, CRITICAL, message)
@@ -236,16 +225,16 @@ class Evaluator(Inspector):
         matches = 0
 
         # (1) static_number
-        if state1["static_number"] == state2["static_number"]:
+        if state1["s"] == state2["s"]:
             matches += 1
 
         # (2) dynamic_number
-        if state1["dynamic_number"] == state2["dynamic_number"]:
+        if state1["d"] == state2["d"]:
             matches += 1
 
         # (3) available_digits_per_rindex
-        adpr1 = state1["available_digits_per_rindex"]
-        adpr2 = state2["available_digits_per_rindex"]
+        adpr1 = state1["a"]
+        adpr2 = state2["a"]
         if isinstance(adpr1, dict) and isinstance(adpr2, dict):
             if set(adpr1.keys()) == set(adpr2.keys()):
                 per_key_match = True
@@ -259,20 +248,20 @@ class Evaluator(Inspector):
                     matches += 1
 
         # (4) players
-        players1 = state1["players"]
-        players2 = state2["players"]
+        players1 = state1["p"]
+        players2 = state2["p"]
         if isinstance(players1, list) and isinstance(players2, list) and len(players1) == len(players2):
             # normalize players by sorting by id (or JSON string sort for safety)
             try:
-                norm1 = sorted(players1, key=lambda x: (x["id"], x["score"], x["is_current_turn"]))
-                norm2 = sorted(players2, key=lambda x: (x["id"], x["score"], x["is_current_turn"]))
+                norm1 = sorted(players1, key=lambda x: (x["i"], x["c"], x["m"]))
+                norm2 = sorted(players2, key=lambda x: (x["i"], x["c"], x["m"]))
                 if all(p1 == p2 for p1, p2 in zip(norm1, norm2)):
                     matches += 1
             except Exception:
                 pass
 
         # (5) player_turn
-        if state1["player_turn"] == state2["player_turn"]:
+        if state1["t"] == state2["t"]:
             matches += 1
 
         # --- Compute result ---
@@ -328,16 +317,31 @@ class Evaluator(Inspector):
         checks if the LLM given state is actually generated
         '''
         # get challenge state and action
-        challenge_maker = ChallengeMaker()
-        challenge_maker_state = challenge_maker.get_state()
-        challenge_maker_action = challenge_maker.get_action()
+        hour = get_utc_hour()
+        date = str(get_utc_date())
+        challenge_dir = os.path.join(CHALLENGES_DIR, date)
+        challenge_name = str(hour) + '.json'
+        challenge_file = os.path.join(challenge_dir, challenge_name)
+        data = None
+        if not os.path.exists(challenge_file):
+            message = f"No challenge found!"
+            self.logger.add_info(CHALLENGE, CRITICAL, message)
+            # log
+            if self.logger.info not in self.logger.episode_log:
+                self.logger.episode_log.append(self.logger.info)
+            return
+        with open(challenge_file, 'r') as f:
+            data = json.load(f)
+        challenge_state = data["challenge"]["initial_state"]
+        challenge_action = data["challenge"]["action"]
+        
         # generate state from the action given in the challenge
         divide21env_simulator = Divide21EnvSimulator()
         options = {
-            'obs': challenge_maker_state
+            'obs': challenge_state
         }
         obs, info = divide21env_simulator.reset(options=options)
-        obs, reward, terminated, truncated, info = divide21env_simulator.step(challenge_maker_action)
+        obs, reward, terminated, truncated, info = divide21env_simulator.step(challenge_action)
         ground_truth_state = divide21env_simulator._decode_state(obs)
         
         # compare states
