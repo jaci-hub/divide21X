@@ -1,5 +1,4 @@
 import os
-import json
 import importlib
 from typing import Optional
 from divide21x.utils.logger import EpisodeLogger
@@ -17,11 +16,15 @@ WARNING = 'warning'
 
 class ModelClient:
     def __init__(self, registry_entry=None):
+        """
+        model_id: matches the "id" field in the JSON registry
+        json_path: path to your JSON registry file
+        """
         # Logging
         self.logger = EpisodeLogger(BASE_DIR)
         
         if registry_entry is None:
-            message = f"No entry from registry.json provided."
+            message = "No entry from registry.json provided."
             print(message)
             self.logger.add_info(MODEL, CRITICAL, message)
             if self.logger.info not in self.logger.episode_log:
@@ -52,30 +55,21 @@ class ModelClient:
         module = importlib.import_module(registry_entry["import_module"])
         client_cls = getattr(module, registry_entry["client_class"])
 
-        # Handle Google Generative AI (new SDK) separately
-        if registry_entry["provider"].lower() == "google":
-            try:
-                import google.generativeai as genai
-                genai.configure(api_key=self.api_key)
-                model_name = registry_entry.get("model_name", "gemini-pro")
-                self.client = genai.GenerativeModel(model_name)
-            except Exception as e:
-                message = f"Failed to initialize Google GenerativeModel: {e}"
-                print(message)
-                self.logger.add_info(API, CRITICAL, message)
-                if self.logger.info not in self.logger.episode_log:
-                    self.logger.episode_log.append(self.logger.info)
-                self.logger.save_episode()
-                return
+        # Initialize client
+        init_kwargs = registry_entry.get("init_args", {})
+        # Handle Google’s GenerativeModel or others without api_key in init args
+        if "api_key" in init_kwargs:
+            init_kwargs["api_key"] = self.api_key
+        elif registry_entry["provider"].lower() == "google":
+            import google.generativeai as genai
+            genai.configure(api_key=self.api_key)
+            init_kwargs["model_name"] = registry_entry["model"]
         else:
-            # Initialize other providers (OpenAI, Anthropic, etc.)
-            init_kwargs = registry_entry.get("init_args", {})
-            # If api_key is expected and not explicitly provided
-            if "api_key" not in init_kwargs:
-                init_kwargs["api_key"] = self.api_key
-            self.client = client_cls(**init_kwargs)
+            init_kwargs["api_key"] = self.api_key
 
-    def chat(self, prompt: str, system_prompt: Optional[str] = None, temperature: Optional[float] = None) -> str:
+        self.client = client_cls(**init_kwargs)
+
+    def chat(self, prompt: str, temperature: Optional[float] = None) -> str:
         """Send a chat-like message using the dynamic chat method from JSON."""
         temp = temperature if temperature is not None else self.temperature
 
@@ -88,18 +82,28 @@ class ModelClient:
             self.logger.save_episode()
             return
 
-        method = getattr(self.client, chat_method_name)
+        # Support nested chat method paths like "chat.completions.create"
+        method = self.client
+        for attr in chat_method_name.split('.'):
+            method = getattr(method, attr)
 
         # Build kwargs dynamically
         call_kwargs = self.entry.get("extra_args", {}).copy()
-        if system_prompt:
-            call_kwargs["system_prompt"] = system_prompt
+
+        # Replace any placeholder in extra_args with the actual prompt
+        if "messages" in call_kwargs:
+            for msg in call_kwargs["messages"]:
+                if "content" in msg and "{prompt}" in msg["content"]:
+                    msg["content"] = msg["content"].replace("{prompt}", prompt)
+
+        # Add direct args for models that don't use messages
         call_kwargs["prompt"] = prompt
         call_kwargs["temperature"] = temp
 
+        # Call the method
         response = method(**call_kwargs)
 
-        # Try to extract text-like output
+        # Return text content based on object type
         if hasattr(response, "text"):
             return response.text.strip()
         elif hasattr(response, "content"):
@@ -107,9 +111,9 @@ class ModelClient:
         elif isinstance(response, str):
             return response.strip()
         elif isinstance(response, list) and len(response) > 0:
-            return response[0]
+            return str(response[0])
         else:
             return str(response)
 
-    def __call__(self, prompt: str, system_prompt: Optional[str] = None, temperature: Optional[float] = None):
-        return self.chat(prompt, system_prompt, temperature)
+    def __call__(self, prompt: str, temperature: Optional[float] = None):
+        return self.chat(prompt, temperature)

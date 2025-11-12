@@ -14,7 +14,6 @@ API = 'api'
 CHAT = 'chat'
 NOTE = 'note'
 PROMPT = 'prompt'
-SYSTEM_PROMPT = 'system_prompt'
 ANSWER = 'answer'
 RESULTS = 'results'
 ID = 'id'
@@ -35,7 +34,6 @@ class Requestor():
         
         self.registry = None
         self.prompt = None
-        self.system_prompt = None
         
         self.result_dir = None
         
@@ -53,7 +51,7 @@ class Requestor():
             challenge_data = None
             message = "Challenge has not been created yet!"
             self.logger.add_info(REQUESTOR, CRITICAL, message)
-            return self.prompt, self.system_prompt
+            return self.prompt
 
         # Construct the few-shot + challenge prompt
         prompt_lines = []
@@ -69,18 +67,14 @@ class Requestor():
                             f"{A}: {json.dumps(challenge[A])}\n"
                             f"{O}: ? (compute this and return as JSON)")
 
+        prompt_lines.append(f"Given '{Z}' and '{A}', compute '{O}'. You must ONLY return a valid JSON object.")
+        
         self.prompt = "\n\n".join(prompt_lines)
-
-        self.system_prompt = (
-            f"Given '{Z}' and '{A}', compute '{O}'. "
-            "You must ONLY return a valid JSON object."
-        )
         
         # log
         self.logger.add_info(REQUESTOR, PROMPT, self.prompt)
-        self.logger.add_info(REQUESTOR, SYSTEM_PROMPT, self.system_prompt)
         
-        return self.prompt, self.system_prompt
+        return self.prompt
         
 
     def prompt_llm(self, registry_entry):
@@ -92,8 +86,8 @@ class Requestor():
             return
 
         # Request the LLM   
-        answer = client.chat(self.prompt, system_prompt=self.system_prompt)
-        
+        answer = client.chat(prompt=self.prompt)
+        print(answer)
         # record results
         if client.model_alias not in self.results:
             self.results[client.model_alias] = {}
@@ -108,9 +102,9 @@ class Requestor():
         
         if self.registry:
             # get prompt
-            self.prompt, self.system_prompt = self.get_prompt()
+            self.prompt = self.get_prompt()
             
-            if self.prompt and self.system_prompt:
+            if self.prompt:
                 # start the requests
                 for registry_entry in self.registry:
                     self.prompt_llm(registry_entry)
