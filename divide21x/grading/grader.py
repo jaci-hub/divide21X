@@ -20,18 +20,6 @@ GRADE = 'grade'
 
 
 class Grader(Evaluator):
-    """
-    Evaluates action-state submissions (no explanations) from LLMs against
-    the Divide21 ground-truth agent.
-
-    Usage:
-    -------
-    >>> grader = Grader()
-    >>> result = grader.grade_submission()
-    >>> print(result)
-    {'action_grade': 80, 'state_grade': 90, 'overall_grade': 85}
-    """
-
     def __init__(self, action=None, state=None):
         super().__init__(action, state)
         

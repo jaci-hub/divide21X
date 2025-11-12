@@ -32,20 +32,6 @@ EQUIVALENT = 'equivalent'
 DEDUCTION_POINTS = 'deduction_points'
 
 class Evaluator(Inspector):
-    """
-    Evaluates action-State submissions (no explanations) from LLMs against
-    the Divide21 ground-truth agent.
-
-    Usage:
-    -------
-    >>> evaluator = Evaluator(action, state)
-    >>> action_passed_inspection = evaluator.action_passed() # via Inspector
-    >>> print(action_passed_inspection)
-    True
-    >>> state_inspection_score = evaluator.get_state_score() # via Inspector
-    >>> print(state_inspection_score)
-    17
-    """
     def __init__(self, action=None, state=None):
         super().__init__(action, state)
         self.inspect_all()

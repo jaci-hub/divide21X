@@ -25,7 +25,6 @@ class ModelClient:
         
         if registry_entry is None:
             message = "No entry from registry.json provided."
-            print(message)
             self.logger.add_info(MODEL, CRITICAL, message)
             if self.logger.info not in self.logger.episode_log:
                 self.logger.episode_log.append(self.logger.info)
@@ -44,7 +43,6 @@ class ModelClient:
                 f"API key for {registry_entry['provider']} not found in "
                 f"environment variable {registry_entry['api_key_env']}"
             )
-            print(message)
             self.logger.add_info(API, CRITICAL, message)
             if self.logger.info not in self.logger.episode_log:
                 self.logger.episode_log.append(self.logger.info)

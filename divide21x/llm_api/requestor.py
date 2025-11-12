@@ -82,12 +82,10 @@ class Requestor():
             registry_entry=registry_entry
         )
         if client.client is None:
-            print(f'client is None')
             return
 
         # Request the LLM   
         answer = client.chat(prompt=self.prompt)
-        print(answer)
         # record results
         if client.model_alias not in self.results:
             self.results[client.model_alias] = {}
