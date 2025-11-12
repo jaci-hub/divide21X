@@ -87,25 +87,30 @@ class ModelClient:
         for attr in chat_method_name.split('.'):
             method = getattr(method, attr)
 
-        # Build kwargs dynamically
         call_kwargs = self.entry.get("extra_args", {}).copy()
 
-        # Replace any placeholder in extra_args with the actual prompt
+        # Replace {prompt} placeholders in messages
         if "messages" in call_kwargs:
             for msg in call_kwargs["messages"]:
                 if "content" in msg and "{prompt}" in msg["content"]:
                     msg["content"] = msg["content"].replace("{prompt}", prompt)
 
-        # Add direct args for models that don't use messages
-        call_kwargs["prompt"] = prompt
         call_kwargs["temperature"] = temp
 
-        # Call the method
-        response = method(**call_kwargs)
+        # ---- 🔧 GOOGLE SPECIAL CASE ----
+        if self.entry["provider"].lower() == "google":
+            # Google’s API wants the prompt as a positional argument
+            response = method(prompt, **call_kwargs)
+        else:
+            # Everyone else can use the named parameter
+            call_kwargs["prompt"] = prompt
+            response = method(**call_kwargs)
 
-        # Return text content based on object type
+        # ---- Extract text from response ----
         if hasattr(response, "text"):
             return response.text.strip()
+        elif hasattr(response, "candidates"):
+            return response.candidates[0].content.parts[0].text.strip()
         elif hasattr(response, "content"):
             return response.content.strip()
         elif isinstance(response, str):
