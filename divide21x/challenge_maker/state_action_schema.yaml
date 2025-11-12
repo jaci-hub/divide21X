@@ -1,8 +1,8 @@
 {
     "action": {
-        "dv": int,
-        "dg": int,
-        "ri": int | null
+        "v": int,
+        "g": int,
+        "r": int | null
     },
     "state": {
         "s": int,
@@ -12,9 +12,9 @@
         },
         "p": [
             {
-                "pi": int,
-                "ps": int,
-                "pt": int
+                "i": int,
+                "c": int,
+                "m": int
             },
             ...
         ],

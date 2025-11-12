@@ -7,9 +7,9 @@
     },
     "p": [
       {
-        "pi": int,
-        "ps": int,
-        "pt": int
+        "i": int,
+        "c": int,
+        "m": int
       },
       ...
     ],
