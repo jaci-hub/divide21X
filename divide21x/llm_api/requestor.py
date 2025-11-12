@@ -88,6 +88,7 @@ class Requestor():
             registry_entry=registry_entry
         )
         if client.client is None:
+            print(f'client is None')
             return
 
         # Request the LLM   
