@@ -1,5 +1,5 @@
 {
-    "a": {
+    "action": {
         "v": int,
         "g": int,
         "r": int | null
