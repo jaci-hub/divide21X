@@ -8,7 +8,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "gymnasium>=0.29",
-        "divide21env>=0.2.5",
+        "divide21env>=0.2.6",
     ],
     python_requires=">=3.10",
 )
