@@ -23,6 +23,10 @@ HASH = 'hash'
 CRITICAL = 'critical'
 WARNING = 'warning'
 
+Z = "z"
+A = "a"
+O = "o"
+
 
 class Requestor():
     def __init__(self):
@@ -55,21 +59,21 @@ class Requestor():
         prompt_lines = []
         for example_key in ["example_1", "example_2"]:
             ex = challenge_data[example_key]
-            prompt_lines.append(f"Example:\nInitial state: {json.dumps(ex['initial_state'])}\n"
-                                f"Action: {json.dumps(ex['action'])}\n"
-                                f"Final state: {json.dumps(ex['final_state'])}\n")
+            prompt_lines.append(f"Example:\n{Z}: {json.dumps(ex[Z])}\n"
+                                f"{A}: {json.dumps(ex[A])}\n"
+                                f"{O}: {json.dumps(ex[O])}\n")
 
         # Add the challenge (no final_state)
         challenge = challenge_data["challenge"]
-        prompt_lines.append(f"Challenge:\nInitial state: {json.dumps(challenge['initial_state'])}\n"
-                            f"Action: {json.dumps(challenge['action'])}\n"
-                            f"Final state: ? (compute this and return as JSON)")
+        prompt_lines.append(f"Challenge:\n{Z}: {json.dumps(challenge[Z])}\n"
+                            f"{A}: {json.dumps(challenge[A])}\n"
+                            f"{O}: ? (compute this and return as JSON)")
 
         self.prompt = "\n\n".join(prompt_lines)
 
         self.system_prompt = (
-            "Given an initial state and an action, "
-            "compute the resulting final state. ONLY return a valid JSON object."
+            f"Given '{Z}' and '{A}', compute '{O}'. "
+            "You must ONLY return a valid JSON object."
         )
         
         # log
