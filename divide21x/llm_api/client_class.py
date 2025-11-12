@@ -55,19 +55,21 @@ class ModelClient:
         module = importlib.import_module(registry_entry["import_module"])
         client_cls = getattr(module, registry_entry["client_class"])
 
-        # Initialize client
-        init_kwargs = registry_entry.get("init_args", {})
-        # Handle Google’s GenerativeModel or others without api_key in init args
-        if "api_key" in init_kwargs:
-            init_kwargs["api_key"] = self.api_key
-        elif registry_entry["provider"].lower() == "google":
+        provider = registry_entry["provider"].lower()
+
+        # ---- Special handling for Google Gemini ----
+        if provider == "google":
             import google.generativeai as genai
             genai.configure(api_key=self.api_key)
-            init_kwargs["model_name"] = registry_entry["model"]
+            self.client = genai.GenerativeModel(
+                model_name=self.model_name,
+                generation_config={"temperature": self.temperature},
+            )
         else:
+            # Initialize client for all other providers
+            init_kwargs = registry_entry.get("init_args", {})
             init_kwargs["api_key"] = self.api_key
-
-        self.client = client_cls(**init_kwargs)
+            self.client = client_cls(**init_kwargs)
 
     def chat(self, prompt: str, temperature: Optional[float] = None) -> str:
         """Send a chat-like message using the dynamic chat method from JSON."""
@@ -95,22 +97,25 @@ class ModelClient:
                 if "content" in msg and "{prompt}" in msg["content"]:
                     msg["content"] = msg["content"].replace("{prompt}", prompt)
 
-        call_kwargs["temperature"] = temp
+        provider = self.entry["provider"].lower()
 
         # ---- 🔧 GOOGLE SPECIAL CASE ----
-        if self.entry["provider"].lower() == "google":
-            # Google’s API wants the prompt as a positional argument
-            response = method(prompt, **call_kwargs)
+        if provider == "google":
+            # Google’s API wants the prompt as a positional argument only
+            response = method(prompt)
         else:
-            # Everyone else can use the named parameter
             call_kwargs["prompt"] = prompt
+            call_kwargs["temperature"] = temp
             response = method(**call_kwargs)
 
         # ---- Extract text from response ----
         if hasattr(response, "text"):
             return response.text.strip()
         elif hasattr(response, "candidates"):
-            return response.candidates[0].content.parts[0].text.strip()
+            try:
+                return response.candidates[0].content.parts[0].text.strip()
+            except Exception:
+                return str(response)
         elif hasattr(response, "content"):
             return response.content.strip()
         elif isinstance(response, str):
