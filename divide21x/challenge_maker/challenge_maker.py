@@ -164,19 +164,19 @@ class ChallengeMaker():
         # (1) examples
         challenge = {}
         challenge["example_1"] = {
-            "initial_state": self.digit_change_example_state_1,
-            "action": self.digit_change_example_action,
-            "final_state": self.digit_change_example_state_2,
+            "z": self.digit_change_example_state_1,
+            "a": self.digit_change_example_action,
+            "o": self.digit_change_example_state_2,
         }
         challenge["example_2"] = {
-            "initial_state": self.division_example_state_1,
-            "action": self.division_example_action,
-            "final_state": self.division_example_state_2,
+            "z": self.division_example_state_1,
+            "a": self.division_example_action,
+            "o": self.division_example_state_2,
         }
         # (2) challenge
         challenge["challenge"] = {
-            "initial_state": self.state,
-            "action": self.action
+            "z": self.state,
+            "a": self.action
         }
         # make the challenge file
         with open(challenge_file_tmp, 'w') as tmp_file:

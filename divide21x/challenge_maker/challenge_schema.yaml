@@ -1,6 +1,6 @@
 {
   "example_1": {
-    "initial_state": {
+    "z": {
       "s": int,
       "d": int,
       "a": {
@@ -16,12 +16,12 @@
       ],
       "t": int
     },
-    "action": {
+    "a": {
       "v": int,
       "g": int,
       "r": int | null
     },
-    "final_state": {
+    "o": {
       "s": int,
       "d": int,
       "a": {
@@ -39,7 +39,7 @@
     }
   },
   "example_2": {
-    "initial_state": {
+    "z": {
       "s": int,
       "d": int,
       "a": {
@@ -55,12 +55,12 @@
       ],
       "t": int
     },
-    "action": {
+    "a": {
       "v": int,
       "g": int,
       "r": int | null
     },
-    "final_state": {
+    "o": {
       "s": int,
       "d": int,
       "a": {
@@ -78,7 +78,7 @@
     }
   },
   "challenge": {
-    "initial_state": {
+    "z": {
       "s": int,
       "d": int,
       "a": {
@@ -94,7 +94,7 @@
       ],
       "t": int
     },
-    "action": {
+    "a": {
       "v": int,
       "g": int,
       "r": int | null

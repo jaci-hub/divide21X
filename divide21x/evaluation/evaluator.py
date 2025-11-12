@@ -332,8 +332,8 @@ class Evaluator(Inspector):
             return
         with open(challenge_file, 'r') as f:
             data = json.load(f)
-        challenge_state = data["challenge"]["initial_state"]
-        challenge_action = data["challenge"]["action"]
+        challenge_state = data["challenge"]["z"]
+        challenge_action = data["challenge"]["a"]
         
         # generate state from the action given in the challenge
         divide21env_simulator = Divide21EnvSimulator()
