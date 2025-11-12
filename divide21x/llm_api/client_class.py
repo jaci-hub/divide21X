@@ -4,7 +4,6 @@ import importlib
 from typing import Optional
 from divide21x.utils.logger import EpisodeLogger
 
-
 # base dir
 BASE_DIR = './divide21x/llm_api/logs'
 # categories
@@ -18,10 +17,6 @@ WARNING = 'warning'
 
 class ModelClient:
     def __init__(self, registry_entry=None):
-        """
-        model_id: matches the "id" field in the JSON registry
-        json_path: path to your JSON registry file
-        """
         # Logging
         self.logger = EpisodeLogger(BASE_DIR)
         
@@ -29,7 +24,6 @@ class ModelClient:
             message = f"No entry from registry.json provided."
             print(message)
             self.logger.add_info(MODEL, CRITICAL, message)
-            # log
             if self.logger.info not in self.logger.episode_log:
                 self.logger.episode_log.append(self.logger.info)
             self.logger.save_episode()
@@ -43,10 +37,12 @@ class ModelClient:
         self.client = None
 
         if not self.api_key:
-            message = f"API key for {registry_entry['provider']} not found in environment variable {registry_entry['api_key_env']}"
+            message = (
+                f"API key for {registry_entry['provider']} not found in "
+                f"environment variable {registry_entry['api_key_env']}"
+            )
             print(message)
             self.logger.add_info(API, CRITICAL, message)
-            # log
             if self.logger.info not in self.logger.episode_log:
                 self.logger.episode_log.append(self.logger.info)
             self.logger.save_episode()
@@ -56,20 +52,37 @@ class ModelClient:
         module = importlib.import_module(registry_entry["import_module"])
         client_cls = getattr(module, registry_entry["client_class"])
 
-        # Initialize client
-        init_kwargs = registry_entry.get("init_args", {"api_key": self.api_key})
-        self.client = client_cls(**init_kwargs)
+        # Handle Google Generative AI (new SDK) separately
+        if registry_entry["provider"].lower() == "google":
+            try:
+                import google.generativeai as genai
+                genai.configure(api_key=self.api_key)
+                model_name = registry_entry.get("model_name", "gemini-pro")
+                self.client = genai.GenerativeModel(model_name)
+            except Exception as e:
+                message = f"Failed to initialize Google GenerativeModel: {e}"
+                print(message)
+                self.logger.add_info(API, CRITICAL, message)
+                if self.logger.info not in self.logger.episode_log:
+                    self.logger.episode_log.append(self.logger.info)
+                self.logger.save_episode()
+                return
+        else:
+            # Initialize other providers (OpenAI, Anthropic, etc.)
+            init_kwargs = registry_entry.get("init_args", {})
+            # If api_key is expected and not explicitly provided
+            if "api_key" not in init_kwargs:
+                init_kwargs["api_key"] = self.api_key
+            self.client = client_cls(**init_kwargs)
 
     def chat(self, prompt: str, system_prompt: Optional[str] = None, temperature: Optional[float] = None) -> str:
         """Send a chat-like message using the dynamic chat method from JSON."""
         temp = temperature if temperature is not None else self.temperature
 
-        # Prepare call args
         chat_method_name = self.entry.get("chat_method")
         if not chat_method_name:
             message = f"chat_method not specified for {self.entry['id']}"
             self.logger.add_info(CHAT, CRITICAL, message)
-            # log
             if self.logger.info not in self.logger.episode_log:
                 self.logger.episode_log.append(self.logger.info)
             self.logger.save_episode()
@@ -84,10 +97,9 @@ class ModelClient:
         call_kwargs["prompt"] = prompt
         call_kwargs["temperature"] = temp
 
-        # Call the method
         response = method(**call_kwargs)
 
-        # If the method returns an object with `.text` or `.content`, handle automatically
+        # Try to extract text-like output
         if hasattr(response, "text"):
             return response.text.strip()
         elif hasattr(response, "content"):
@@ -95,7 +107,7 @@ class ModelClient:
         elif isinstance(response, str):
             return response.strip()
         elif isinstance(response, list) and len(response) > 0:
-            return response[0]  # fallback for lists
+            return response[0]
         else:
             return str(response)
 
