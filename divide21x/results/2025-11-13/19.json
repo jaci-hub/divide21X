@@ -3,15 +3,13 @@
         "answer": {
             "error": "invalid_json",
             "raw": "[Error: API call failed for GPT-4o]"
-        },
-        "result": 0.0
+        }
     },
     "GPT-o1": {
         "answer": {
             "error": "invalid_json",
             "raw": "[Error: API call failed for GPT-o1]"
-        },
-        "result": 0.0
+        }
     },
     "Gemini 2.5 Pro": {
         "answer": {
@@ -25,45 +23,6 @@
                     4,
                     5,
                     6,
-                    8
-                ],
-                "1": [
-                    0,
-                    1,
-                    2,
-                    5,
-                    6,
-                    7,
-                    9
-                ],
-                "2": [
-                    2,
-                    5,
-                    6,
-                    7,
-                    8
-                ],
-                "3": [
-                    1,
-                    2,
-                    5,
-                    9
-                ],
-                "4": [
-                    1,
-                    2,
-                    5,
-                    7,
-                    8,
-                    9
-                ],
-                "5": [
-                    0,
-                    2,
-                    3,
-                    4,
-                    5,
-                    7,
                     8
                 ]
             },
@@ -100,7 +59,6 @@
                 }
             ],
             "t": 2
-        },
-        "result": 40.0
+        }
     }
 }
