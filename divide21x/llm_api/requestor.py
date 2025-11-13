@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os
+import re
 from divide21x.llm_api.client_class import ModelClient
 from divide21x.utils.logger import EpisodeLogger
 from divide21x.utils.util import get_llm_registry, get_utc_date, get_utc_datetime, get_utc_hour
@@ -86,6 +87,39 @@ class Requestor():
 
         # Request the LLM   
         answer = client.chat(prompt=self.prompt)
+        
+        # clean the answer - although it might be json, it still might need to be polished as it is gotten from a chat
+        # --- Clean the answer safely ---
+        if not answer or not isinstance(answer, str):
+            self.logger.add_info(CHAT, "ERROR", f"Empty or invalid answer: {answer}")
+            return {"error": "empty_answer"}
+
+        # (1) Remove Markdown code fences, with optional language tag and newlines
+        answer = re.sub(r"^```(?:json)?\s*|\s*```$", "", answer.strip(), flags=re.DOTALL)
+
+        # (2) Remove any leading non-JSON text before the first brace/bracket
+        json_start = re.search(r"[\{\[]", answer)
+        if json_start:
+            answer = answer[json_start.start():].strip()
+
+        # (3) Unescape backslashes (common in JSON returned as string)
+        try:
+            answer = answer.encode('utf-8').decode('unicode_escape')
+        except Exception:
+            pass  # only warn if necessary
+
+        # (4) Try to parse JSON safely
+        try:
+            answer = json.loads(answer)
+        except json.JSONDecodeError as e:
+            # fallback: try a cleanup for double quotes or trailing commas
+            cleaned = answer.strip().strip('"').strip("'").rstrip(',')
+            try:
+                answer = json.loads(cleaned)
+            except Exception:
+                self.logger.add_info(CHAT, "WARN", f"Invalid JSON: {answer[:150]} | Error: {e}")
+                answer = {"error": "invalid_json", "raw": answer}
+        
         # record results
         if client.model_alias not in self.results:
             self.results[client.model_alias] = {}
