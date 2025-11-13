@@ -1,4 +1,3 @@
-import re
 import gymnasium as gym
 from gymnasium import spaces
 import divide21env
@@ -67,20 +66,6 @@ if __name__ == "__main__":
         
     if data:
         for key, value in data.items():
-            print('++++++++++++++++++++++++++++++++++++++')
-            print(key)
-            print(value[ANSWER])
-            print('++++++++++++++++++++++++++++++++++++++')
-            
-            # clean answer
-            # remove the Markdown ```json fences
-            value[ANSWER] = re.sub(r"^```json|```$", "", value[ANSWER].strip())
-            # unescape backslashes
-            value[ANSWER] = value[ANSWER].encode('utf-8').decode('unicode_escape')
-
-            # load into a Python dict
-            value[ANSWER] = json.loads(value[ANSWER])
-            
             divide21x = Divide21X(state=value[ANSWER])
             divide21x.start()
             # add result
