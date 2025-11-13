@@ -3,7 +3,7 @@ import os
 import datetime, hashlib, random
 from divide21x.simulator.divide21env_simulator import Divide21EnvSimulator
 from divide21x.utils.logger import EpisodeLogger
-from divide21x.utils.util import get_utc_date, get_utc_datetime, get_utc_hour
+from divide21x.utils.util import get_utc_date, get_utc_datetime, get_utc_day, get_utc_hour
 
 
 BASE_DIR='./divide21x/challenge_maker/logs'
@@ -82,23 +82,19 @@ class ChallengeMaker():
 
     def make_challenge(self):
         """
-        Returns the Divide21x challenge for a specific hour.
-        time: datetime or None (defaults to current UTC hour)
+        Returns the Divide21x challenge of the day.
         """
         # Use timezone-aware UTC datetime
-        utc_datetime = get_utc_datetime()
-        hour = get_utc_hour()
-        hour_2 = hour + 2
         date = str(get_utc_date())
-        date_hour_str = utc_datetime[:13]  # e.g. "2025-11-04T15"
+        day = get_utc_day()
+        day_after = int(day) + 1 # i use day after becuase when i set it to digits it keeps it from being 1, for the first day of the month!
         
         # place challenge in the challenges dir
-        challenge_dir = os.path.join(CHALLENGES_DIR, date)
-        os.makedirs(challenge_dir, exist_ok=True)
-        challenge_name = str(hour) + '.json'
-        challenge_file = os.path.join(challenge_dir, challenge_name)
-        challenge_name_tmp = str(hour) + '.json.tmp'
-        challenge_file_tmp = os.path.join(challenge_dir, challenge_name_tmp)
+        os.makedirs(CHALLENGES_DIR, exist_ok=True)
+        challenge_name = date + '.json'
+        challenge_file = os.path.join(CHALLENGES_DIR, challenge_name)
+        challenge_name_tmp = challenge_name + '.tmp'
+        challenge_file_tmp = os.path.join(CHALLENGES_DIR, challenge_name_tmp)
         
         # check if challenge already exists
         if os.path.isfile(challenge_file):
@@ -112,13 +108,13 @@ class ChallengeMaker():
             return
 
         # Create a deterministic seed based on the string
-        seed = int(hashlib.sha256(date_hour_str.encode()).hexdigest(), 16) % (10**8)
+        seed = int(hashlib.sha256(date.encode()).hexdigest(), 16) % (10**8)
         random.seed(seed)
 
-        #   get player number between 2 and hour+2
-        players = random.randint(2, hour_2)
+        #   get player number between 2 and day_after
+        players = random.randint(2, day_after)
         #   set state
-        divide21env_simulator = Divide21EnvSimulator(digits=hour_2, players=players)
+        divide21env_simulator = Divide21EnvSimulator(digits=day_after, players=players)
         obs, info = divide21env_simulator.reset(seed=seed)
         
         #   play for at least 100 actions - this prevents the initial state from always being given
@@ -129,14 +125,14 @@ class ChallengeMaker():
             action = {
                 "v": division,
                 "g": int(random.randint(0, 9)) if not division else int(random.randint(2, 9)),
-                "r": int(random.randint(0, hour_2-1)) if not division else None
+                "r": int(random.randint(0, day_after-1)) if not division else None
             }
             # apply action
             obs, reward, done, trunc, info = divide21env_simulator.step(action)
             obs = divide21env_simulator._decode_state(obs)
             state_collection.append(obs)
-            # update hour_2
-            hour_2 = len(str(obs["d"]))
+            # update day_after
+            day_after = len(str(obs["d"]))
             if done or trunc:
                 # do not append the final state
                 state_collection.pop()
@@ -146,7 +142,7 @@ class ChallengeMaker():
         self.state = state_collection[selected]
         #   set action
         division = bool(random.randint(0, 1))
-        rindex = int(random.randint(0, hour_2-1)) if not division else None
+        rindex = int(random.randint(0, day_after-1)) if not division else None
         digit = None
         if division:
             digit = int(random.randint(2, 9))
@@ -184,7 +180,7 @@ class ChallengeMaker():
         os.rename(challenge_file_tmp, challenge_file)
         
         # log a unique challenge ID and hash
-        self.challenge_id = date_hour_str
+        self.challenge_id = date
         to_hash = self.challenge_id + str(challenge)
         self.challenge_hash = hashlib.sha256(to_hash.encode()).hexdigest()
         
