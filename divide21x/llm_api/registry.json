@@ -160,7 +160,12 @@
         "import_module": "mistralai.client",
         "client_class": "MistralClient",
         "chat_method": "chat",
-        "extra_args": {},
+        "extra_args": {
+            "model": "mistral-large-latest",
+            "messages": [
+                {"role": "user", "content": "{prompt}"}
+            ]
+        },
         "notes": "Open-weight model with efficient symbolic reasoning performance."
     },
     {
@@ -264,7 +269,12 @@
         "import_module": "xai",
         "client_class": "Client",
         "chat_method": "chat",
-        "extra_args": {},
+        "extra_args": {
+            "model": "grok-2",
+            "messages": [
+                {"role": "user", "content": "{prompt}"}
+            ]
+        },
         "notes": "xAI's logic-oriented model; competitive reasoning performance."
     }
 ]
