@@ -2,8 +2,8 @@ name: Divide21X
 
 on:
   schedule:
-    # Run once every hour, at minute 0 (UTC)
-    - cron: "0 * * * *"
+    # Run 3 times a day (UTC)
+    - cron: "0 0,8,16 * * *"
   workflow_dispatch:  # allows manual trigger too
 
 jobs:
