@@ -196,6 +196,33 @@
         "notes": "Free open-weight MoE model; decent reasoning for its cost."
     },
     {
+        "id": "llama3-hf",
+        "provider": "huggingface",
+        "model": "meta-llama/Meta-Llama-3-70B-Instruct",
+        "alias": "Llama3 70B HF",
+        "category": "open-weight",
+        "family": "Llama 3",
+        "release_date": "2024-07",
+        "context_length": 32768,
+        "max_output_tokens": 2048,
+        "temperature": 0.0,
+        "cost_per_1k_input_tokens_usd": 0.0, 
+        "cost_per_1k_output_tokens_usd": 0.0,
+        "supports_system_prompt": true, 
+        "supports_json_mode": false,
+        "reasoning_type": "general", 
+        "api_key_env": "HUGGINGFACE_API_KEY",
+        "import_module": "huggingface_hub",
+        "client_class": "InferenceClient",
+        "chat_method": "text_generation",
+        "extra_args": {
+            "model": "meta-llama/Meta-Llama-3-70B-Instruct",
+            "temperature": 0.0,
+            "max_new_tokens": 500
+        },
+        "notes": "Hugging Face Llama 3 instruct model; good for symbolic and reasoning tasks."
+    },
+    {
         "id": "cohere-command-r-plus",
         "provider": "cohere",
         "model": "command-r-plus",
