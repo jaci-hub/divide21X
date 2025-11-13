@@ -5,7 +5,7 @@ import json
 import os
 from divide21x.grading.grader import Grader
 from divide21x.utils.logger import EpisodeLogger
-from divide21x.utils.util import get_utc_date, get_utc_hour
+from divide21x.utils.util import get_utc_date, get_utc_day, get_utc_hour
 
 
 BASE_DIR='./divide21x/envs/logs'
@@ -52,13 +52,12 @@ class Divide21X(Grader):
 if __name__ == "__main__":
     # navigate the results dir
     date = str(get_utc_date())
-    hour = str(get_utc_hour())
-    daily_results_dir = os.path.join(RESULTS_DIR, date)
+    day = str(get_utc_day())
     
-    # get the results file for the hour
+    # get the results file
     data = None
-    file_name = hour + '.json'
-    file = os.path.join(daily_results_dir, file_name)
+    file_name = day + '.json'
+    file = os.path.join(RESULTS_DIR, file_name)
     
     if os.path.exists(file):
         with open(file, 'r') as f:
