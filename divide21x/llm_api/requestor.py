@@ -87,6 +87,10 @@ class Requestor():
 
         # Request the LLM   
         answer = client.chat(prompt=self.prompt)
+        print('')
+        print(client.model_alias)
+        print(answer)
+        print('+++++++++++++++++++++++++++++++++++++')
         
         # clean the answer - although it might be json, it still might need to be polished as it is gotten from a chat
         # --- Clean the answer safely ---
