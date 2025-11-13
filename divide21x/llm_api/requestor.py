@@ -4,7 +4,7 @@ import os
 import re
 from divide21x.llm_api.client_class import ModelClient
 from divide21x.utils.logger import EpisodeLogger
-from divide21x.utils.util import get_llm_registry, get_utc_date, get_utc_datetime, get_utc_hour
+from divide21x.utils.util import get_llm_registry, get_utc_date, get_utc_datetime, get_utc_day, get_utc_hour
 
 
 RESULTS_DIR = './divide21x/results'
@@ -35,18 +35,16 @@ class Requestor():
         
         self.registry = None
         self.prompt = None
-        
-        self.result_dir = None
-        
-        # get date and time
+                
+        # get date
         self.date = str(get_utc_date())
-        self.hour = str(get_utc_hour())
+        self.day = str(get_utc_day())
         
         self.results = {}
         
     def get_prompt(self):
         try:
-            with open(f"divide21x/challenges/{self.date}/{self.hour}.json", "r") as f:
+            with open(f"divide21x/challenges/{self.date}.json", "r") as f:
                 challenge_data = json.load(f)
         except FileNotFoundError:
             challenge_data = None
@@ -87,10 +85,6 @@ class Requestor():
 
         # Request the LLM   
         answer = client.chat(prompt=self.prompt)
-        print('')
-        print(client.model_alias)
-        print(answer)
-        print('+++++++++++++++++++++++++++++++++++++')
         
         # clean the answer - although it might be json, it still might need to be polished as it is gotten from a chat
         # --- Clean the answer safely ---
@@ -147,13 +141,12 @@ class Requestor():
             
                 # write to results dir
                 if self.results:
-                    self.result_dir = os.path.join(RESULTS_DIR, self.date)
-                    os.makedirs(self.result_dir, exist_ok=True)
+                    os.makedirs(RESULTS_DIR, exist_ok=True)
                     
-                    result_name = str(self.hour) + '.json'
-                    result_file = os.path.join(self.result_dir, result_name)
-                    result_name_tmp = str(self.hour) + '.json.tmp'
-                    result_file_tmp = os.path.join(self.result_dir, result_name_tmp)
+                    result_name = str(self.date) + '.json'
+                    result_file = os.path.join(RESULTS_DIR, result_name)
+                    result_name_tmp = result_name + '.tmp'
+                    result_file_tmp = os.path.join(RESULTS_DIR, result_name_tmp)
                     
                     # make the results file
                     with open(result_file_tmp, 'w') as tmp_file:
@@ -161,12 +154,10 @@ class Requestor():
                     os.rename(result_file_tmp, result_file)
                     
                     # log
-                    message = f'Created results for today [{self.date}]'
+                    message = f'Results for today [{self.date}] are in.'
                     self.logger.add_info(REQUESTOR, RESULTS, message)
                     # log a unique challenge ID and hash
-                    utc_datetime = get_utc_datetime()
-                    date_hour_str = utc_datetime[:13]
-                    self.results_id = date_hour_str
+                    self.results_id = self.date
                     to_hash = self.results_id + str(self.results)
                     self.results_hash = hashlib.sha256(to_hash.encode()).hexdigest()
                     self.logger.add_info(REQUESTOR, ID, self.results_id)
