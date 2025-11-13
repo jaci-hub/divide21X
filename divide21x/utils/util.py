@@ -30,6 +30,13 @@ def get_utc_datetime(as_iso=True):
     utc_dt = datetime.datetime.now(datetime.timezone.utc)
     return utc_dt.isoformat() if as_iso else utc_dt
 
+def get_utc_day():
+    """
+    Returns the current day in UTC as an integer.
+    """
+    utc_dt = get_utc_datetime(as_iso=False)
+    return utc_dt.day
+
 def get_utc_hour():
     """
     Returns the current hour in UTC as an integer (0-23).
@@ -50,3 +57,7 @@ def get_llm_registry():
         registry = None
     
     return registry
+
+
+if __name__ == "__main__":
+    print(get_utc_day())
