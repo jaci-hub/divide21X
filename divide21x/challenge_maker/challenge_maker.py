@@ -98,7 +98,7 @@ class ChallengeMaker():
         
         # check if challenge already exists
         if os.path.isfile(challenge_file):
-            message = "Challenge was already created."
+            message = "Challenge for today has already been created."
             self.logger.add_info(CHALLENGE, WARNING, message)
             # log
             if self.logger.info not in self.logger.episode_log:
@@ -184,7 +184,7 @@ class ChallengeMaker():
         to_hash = self.challenge_id + str(challenge)
         self.challenge_hash = hashlib.sha256(to_hash.encode()).hexdigest()
         
-        message = "Challenge created."
+        message = f"Challenge for today [{date}] has been created."
         self.logger.add_info(CHALLENGE, NOTE, message)
         self.logger.add_info(CHALLENGE, ID, self.challenge_id)
         self.logger.add_info(CHALLENGE, HASH, self.challenge_hash)
