@@ -67,6 +67,11 @@ if __name__ == "__main__":
         
     if data:
         for key, value in data.items():
+            print('++++++++++++++++++++++++++++++++++++++')
+            print(key)
+            print(value[ANSWER])
+            print('++++++++++++++++++++++++++++++++++++++')
+            
             # clean answer
             # remove the Markdown ```json fences
             value[ANSWER] = re.sub(r"^```json|```$", "", value[ANSWER].strip())
