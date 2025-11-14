@@ -222,11 +222,13 @@ class Evaluator(Inspector):
         adpr1 = state1["a"]
         adpr2 = state2["a"]
         if isinstance(adpr1, dict) and isinstance(adpr2, dict):
-            if set(adpr1.keys()) == set(adpr2.keys()):
+            adpr1_norm = {str(k): v for k, v in adpr1.items()}
+            adpr2_norm = {str(k): v for k, v in adpr2.items()}
+            if set(adpr1_norm.keys()) == set(adpr2_norm.keys()):
                 per_key_match = True
-                for k in adpr1.keys():
-                    v1 = sorted(adpr1[k]) if isinstance(adpr1[k], list) else []
-                    v2 = sorted(adpr2[k]) if isinstance(adpr2[k], list) else []
+                for k in adpr1_norm.keys():
+                    v1 = sorted(adpr1_norm[k]) if isinstance(adpr1_norm[k], list) else []
+                    v2 = sorted(adpr2_norm[k]) if isinstance(adpr2_norm[k], list) else []
                     if v1 != v2:
                         per_key_match = False
                         break
