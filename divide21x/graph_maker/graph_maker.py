@@ -4,9 +4,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 import pandas as pd
+from divide21x.utils.util import get_utc_date
 
 
 RESULTS_DIR = './divide21x/results'
+GRAPHS_DIR = os.path.join(RESULTS_DIR, 'graphs')
 RESULT = 'result'
 
 
@@ -41,4 +43,11 @@ if __name__ == "__main__":
     plt.legend(title="LLM Alias")
     plt.grid(True)
     plt.tight_layout()
-    plt.show()
+
+    # save graph
+    os.makedirs(GRAPHS_DIR, exist_ok=True)
+    date = get_utc_date()
+    graph_file_name = date + '.png'
+    graph_file = os.path.join(GRAPHS_DIR, graph_file_name)
+    plt.savefig(graph_file)
+    
