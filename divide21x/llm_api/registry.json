@@ -293,12 +293,13 @@
         "supports_json_mode": true,
         "reasoning_type": "logical",
         "api_key_env": "XAI_API_KEY",
-        "import_module": "xai",
+        "import_module": "xai_sdk",
         "client_class": "Client",
         "chat_method": "chat",
         "extra_args": {
             "model": "grok-2",
             "messages": [
+                {"role": "system", "content": "{system_prompt}"},
                 {"role": "user", "content": "{prompt}"}
             ]
         },
