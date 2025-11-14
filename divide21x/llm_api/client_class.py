@@ -203,7 +203,7 @@ class ModelClient:
         elif provider not in {"google", "huggingface", "huggingface_hub", "cohere"}:
             call_kwargs["prompt"] = prompt
 
-        if provider != "google":
+        if provider not in {"google", "openai-o1"}:
             call_kwargs["temperature"] = temp
 
         # Call the API and capture errors with tracebacks for CI logs
