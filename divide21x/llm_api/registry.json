@@ -241,9 +241,12 @@
         "api_key_env": "COHERE_API_KEY",
         "import_module": "cohere",
         "client_class": "Client",
-        "chat_method": "generate",
+        "chat_method": "chat",
         "extra_args": {
             "model": "command-r-plus",
+            "messages": [
+                {"role": "user", "content": "{prompt}"}
+            ],
             "temperature": 0.0,
             "max_tokens": 500
         },
@@ -295,7 +298,7 @@
         "api_key_env": "XAI_API_KEY",
         "import_module": "xai_sdk",
         "client_class": "Client",
-        "chat_method": "chat",
+        "chat_method": "chat.completions.create",
         "extra_args": {
             "model": "grok-2",
             "messages": [

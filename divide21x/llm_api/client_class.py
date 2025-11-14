@@ -200,7 +200,7 @@ class ModelClient:
                     msg["content"] = content.replace("{prompt}", prompt)
                 processed_messages.append(msg)
             call_kwargs["messages"] = processed_messages
-        elif provider not in {"google", "huggingface", "huggingface_hub"}:
+        elif provider not in {"google", "huggingface", "huggingface_hub", "cohere"}:
             call_kwargs["prompt"] = prompt
 
         if provider != "google":
