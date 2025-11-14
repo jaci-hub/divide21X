@@ -1,0 +1,375 @@
+{
+    "GPT-4o": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for GPT-4o]"
+        },
+        "result": 0.0
+    },
+    "GPT-o1": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for GPT-o1]"
+        },
+        "result": 0.0
+    },
+    "Claude 3 Opus": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Claude 3 Opus]"
+        },
+        "result": 0.0
+    },
+    "Claude 3 Sonnet": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Claude 3 Sonnet]"
+        },
+        "result": 0.0
+    },
+    "Gemini 2.5 Pro": {
+        "answer": {
+            "s": 615143721413519,
+            "d": 99631643350720,
+            "a": {
+                "0": [
+                    0,
+                    1,
+                    2,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ],
+                "1": [
+                    0,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ],
+                "2": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    6,
+                    8,
+                    9
+                ],
+                "3": [
+                    1,
+                    5,
+                    7
+                ],
+                "4": [
+                    0,
+                    2,
+                    4,
+                    6,
+                    7
+                ],
+                "5": [
+                    0,
+                    1,
+                    2,
+                    5,
+                    6,
+                    8,
+                    9
+                ],
+                "6": [
+                    2,
+                    5,
+                    6,
+                    7,
+                    9
+                ],
+                "7": [
+                    0,
+                    3,
+                    5,
+                    6,
+                    8,
+                    9
+                ],
+                "8": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    8
+                ],
+                "9": [
+                    0,
+                    2,
+                    4,
+                    5,
+                    6,
+                    8,
+                    9
+                ],
+                "10": [
+                    0,
+                    1,
+                    2,
+                    5,
+                    6,
+                    8,
+                    9
+                ],
+                "11": [
+                    0,
+                    2,
+                    3,
+                    4,
+                    5,
+                    7,
+                    9
+                ],
+                "12": [
+                    0,
+                    2,
+                    4,
+                    6,
+                    7,
+                    8
+                ],
+                "13": [
+                    2,
+                    3,
+                    5,
+                    6,
+                    7
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -14,
+                    "m": 0
+                },
+                {
+                    "i": 1,
+                    "c": -43,
+                    "m": 0
+                },
+                {
+                    "i": 2,
+                    "c": -19,
+                    "m": 0
+                },
+                {
+                    "i": 3,
+                    "c": -30,
+                    "m": 0
+                },
+                {
+                    "i": 4,
+                    "c": -3,
+                    "m": 0
+                }
+            ],
+            "t": 6
+        },
+        "result": 0.0
+    },
+    "Mistral Large": {
+        "answer": {
+            "s": 615143721413519,
+            "d": 99631643350729,
+            "a": {
+                "0": [
+                    0,
+                    1,
+                    2,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ],
+                "1": [
+                    0,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ],
+                "2": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    6,
+                    8,
+                    9
+                ],
+                "3": [
+                    1,
+                    5,
+                    7
+                ],
+                "4": [
+                    0,
+                    2,
+                    4,
+                    6,
+                    7
+                ],
+                "5": [
+                    0,
+                    1,
+                    2,
+                    5,
+                    6,
+                    8,
+                    9
+                ],
+                "6": [
+                    2,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "7": [
+                    0,
+                    3,
+                    5,
+                    6,
+                    8,
+                    9
+                ],
+                "8": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    8
+                ],
+                "9": [
+                    0,
+                    2,
+                    4,
+                    5,
+                    6,
+                    8,
+                    9
+                ],
+                "10": [
+                    0,
+                    1,
+                    2,
+                    5,
+                    6,
+                    8,
+                    9
+                ],
+                "11": [
+                    0,
+                    2,
+                    3,
+                    4,
+                    5,
+                    7,
+                    9
+                ],
+                "12": [
+                    0,
+                    2,
+                    4,
+                    6,
+                    7,
+                    8
+                ],
+                "13": [
+                    2,
+                    3,
+                    5,
+                    6,
+                    7
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -14,
+                    "m": 0
+                },
+                {
+                    "i": 1,
+                    "c": -43,
+                    "m": 1
+                },
+                {
+                    "i": 2,
+                    "c": -19,
+                    "m": 0
+                },
+                {
+                    "i": 3,
+                    "c": -30,
+                    "m": 0
+                },
+                {
+                    "i": 4,
+                    "c": -3,
+                    "m": 0
+                },
+                {
+                    "i": 5,
+                    "c": 6,
+                    "m": 1
+                }
+            ],
+            "t": 0
+        },
+        "result": 0.0
+    },
+    "Mixtral 8\u00d77B": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Mixtral 8\u00c3\u00977B]"
+        },
+        "result": 0.0
+    },
+    "Llama3 70B HF": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Llama3 70B HF]"
+        },
+        "result": 0.0
+    },
+    "Command R+": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Command R+]"
+        },
+        "result": 0.0
+    },
+    "DeepSeek-Math 7B": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for DeepSeek-Math 7B]"
+        },
+        "result": 0.0
+    },
+    "Grok 2": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Grok 2]"
+        },
+        "result": 0.0
+    }
+}
