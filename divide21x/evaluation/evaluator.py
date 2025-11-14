@@ -125,23 +125,23 @@ class Evaluator(Inspector):
         a2 = normalize(action2)
 
         # --- Comparison ---
-        total_keys = 3
-        matches = 0
+        rubric = get_rubric()
+        total_score = 0
 
         # (1) division
         if a1["v"] == a2["v"]:
-            matches += 1
+            total_score += rubric["action"]["v"]
 
         # (2) digit
         if a1["g"] == a2["g"]:
-            matches += 1
+            total_score += rubric["action"]["g"]
 
         # (3) rindex
         if a1["r"] == a2["r"]:
-            matches += 1
+            total_score += rubric["action"]["r"]
 
         # --- Compute final score ---
-        similarity_score = round((matches / total_keys) * 100, 2)
+        similarity_score = round(total_score, 2)
         actions_are_equivalent = similarity_score == 100.0
         
         self.logger.add_info(ACTION_COMPARISON, EQUIVALENT, actions_are_equivalent)
