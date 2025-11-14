@@ -1,5 +1,6 @@
 import os
 import importlib
+import traceback
 from typing import Optional
 from divide21x.utils.logger import EpisodeLogger
 
@@ -17,12 +18,12 @@ WARNING = 'warning'
 class ModelClient:
     def __init__(self, registry_entry=None):
         """
-        model_id: matches the "id" field in the JSON registry
-        json_path: path to your JSON registry file
+        Dynamic client wrapper that initializes per the registry entry.
+        This handles provider-specific constructors and import name quirks.
         """
         # Logging
         self.logger = EpisodeLogger(BASE_DIR)
-        
+
         if registry_entry is None:
             message = "No entry from registry.json provided."
             self.logger.add_info(MODEL, CRITICAL, message)
@@ -49,30 +50,124 @@ class ModelClient:
             self.logger.save_episode()
             return
 
-        # Dynamic import
-        module = importlib.import_module(registry_entry["import_module"])
-        client_cls = getattr(module, registry_entry["client_class"])
-
         provider = registry_entry["provider"].lower()
 
-        # ---- Special handling for Google Gemini ----
-        if provider == "google":
-            import google.generativeai as genai
-            genai.configure(api_key=self.api_key)
-            self.client = genai.GenerativeModel(
-                model_name=self.model_name,
-                generation_config={"temperature": self.temperature},
-            )
-        else:
-            # Initialize client for all other providers
-            init_kwargs = registry_entry.get("init_args", {})
-            init_kwargs["api_key"] = self.api_key
-            self.client = client_cls(**init_kwargs)
+        # Try provider-aware import and initialization
+        try:
+            # Special cases first
+            if provider == "google":
+                # Google handled with generativeai library
+                import google.generativeai as genai
+                genai.configure(api_key=self.api_key)
+                self.client = genai.GenerativeModel(
+                    model_name=self.model_name,
+                    generation_config={"temperature": self.temperature},
+                )
+                return
+
+            if provider == "openai":
+                # Modern OpenAI client auto-loads key from env var
+                # Ensure env var set and instantiate OpenAI()
+                try:
+                    # set env var for OpenAI client to read
+                    os.environ["OPENAI_API_KEY"] = self.api_key
+                    from openai import OpenAI
+                    self.client = OpenAI()
+                    return
+                except Exception:
+                    # fallback to dynamic import path if different version
+                    pass
+
+            # For xAI (Grok), PyPI package xai-sdk exposes package `xai`
+            if provider == "xai":
+                # try common import names
+                for mod_name in ("xai", "xai_sdk"):
+                    try:
+                        module = importlib.import_module(mod_name)
+                        client_cls = getattr(module, registry_entry.get("client_class", "Client"))
+                        # many versions use Client(api_key=...) or Client(...)
+                        try:
+                            self.client = client_cls(api_key=self.api_key)
+                        except TypeError:
+                            # maybe takes token or key as first positional arg
+                            self.client = client_cls(self.api_key)
+                        return
+                    except Exception:
+                        continue
+                raise ImportError("xAI SDK import failed for both 'xai' and 'xai_sdk'")
+
+            # Generic dynamic import for other providers
+            import_module_name = registry_entry.get("import_module")
+            # some registry entries might list a PyPI name instead of import; try sensible fallbacks
+            tried = []
+            module = None
+            if import_module_name:
+                for candidate in [import_module_name, import_module_name.replace('-', '_'), import_module_name.replace('-', '')]:
+                    tried.append(candidate)
+                    try:
+                        module = importlib.import_module(candidate)
+                        break
+                    except Exception:
+                        module = None
+                if module is None:
+                    raise ModuleNotFoundError(f"Could not import any of {tried}")
+
+            client_cls_name = registry_entry.get("client_class")
+            if not module or not client_cls_name:
+                raise ImportError("Missing module or client class in registry entry")
+
+            client_cls = getattr(module, client_cls_name)
+
+            # Build init kwargs with provider-specific parameter names
+            init_kwargs = registry_entry.get("init_args", {}).copy() or {}
+
+            # Provider-specific arg name mapping
+            if provider in {"huggingface", "huggingface_hub"}:
+                # InferenceClient expects token=...
+                init_kwargs.setdefault("token", self.api_key)
+            elif provider == "cohere":
+                # cohere.Client accepts api_key positional or api_key kw
+                init_kwargs.setdefault("api_key", self.api_key)
+            elif provider == "anthropic":
+                init_kwargs.setdefault("api_key", self.api_key)
+            elif provider == "mistral":
+                init_kwargs.setdefault("api_key", self.api_key)
+            else:
+                # default try api_key
+                init_kwargs.setdefault("api_key", self.api_key)
+
+            # Instantiate client
+            try:
+                self.client = client_cls(**init_kwargs)
+            except TypeError as e:
+                # Try positional fallback (some clients want token positional)
+                try:
+                    self.client = client_cls(self.api_key)
+                except Exception as e2:
+                    raise e  # re-raise original to be caught below
+
+        except Exception as exc:
+            # Log full traceback for debugging in CI logs
+            tb = traceback.format_exc()
+            message = f"Failed to initialize client for {self.model_alias} ({provider}): {exc}\n{tb}"
+            # print also to stdout so it shows in GitHub Actions logs immediately
+            print(message)
+            self.logger.add_info(MODEL, CRITICAL, message)
+            if self.logger.info not in self.logger.episode_log:
+                self.logger.episode_log.append(self.logger.info)
+            self.logger.save_episode()
+            self.client = None
+            return
 
     def chat(self, prompt: str, temperature: Optional[float] = None) -> str:
         """Send a chat-like message using the dynamic chat method from JSON."""
         temp = temperature if temperature is not None else self.temperature
-        
+
+        if self.client is None:
+            message = f"No client initialized for {self.model_alias}"
+            self.logger.add_info(CHAT, CRITICAL, message)
+            return f"[Error: no client for {self.model_alias}]"
+
         chat_method_name = self.entry.get("chat_method")
         if not chat_method_name:
             message = f"chat_method not specified for {self.entry['id']}"
@@ -89,56 +184,40 @@ class ModelClient:
 
         call_kwargs = self.entry.get("extra_args", {}).copy()
         provider = self.entry["provider"].lower()
-        
-        # This is a good feature you added! Let's keep it.
-        # It assumes you will add a "system_prompt" key to your registry entries.
+
         system_prompt_str = self.entry.get("system_prompt", "")
 
-        # ---- Prepare API Arguments ----
-
-        # Case 1: API uses a "messages" list (OpenAI, Anthropic, Mistral, XAI)
+        # Prepare messages/prompt
         if "messages" in call_kwargs:
             processed_messages = []
             for msg in call_kwargs["messages"]:
                 content = msg.get("content", "")
-                
-                # Handle system prompt
                 if msg.get("role") == "system":
                     if content == "{system_prompt}" and not system_prompt_str:
-                        continue  # Skip empty system prompt
+                        continue
                     msg["content"] = content.replace("{system_prompt}", system_prompt_str)
-                
-                # Handle user prompt
                 if "{prompt}" in content:
                     msg["content"] = content.replace("{prompt}", prompt)
-                
                 processed_messages.append(msg)
             call_kwargs["messages"] = processed_messages
-        
-        # Case 2: API uses a top-level "prompt" (Cohere, some HuggingFace)
-        # Note: Google and HuggingFace positional args are handled below.
-        elif provider not in {"google", "huggingface"}:
-             call_kwargs["prompt"] = prompt
+        elif provider not in {"google", "huggingface", "huggingface_hub"}:
+            call_kwargs["prompt"] = prompt
 
-        # Add temperature for all providers except Google
         if provider != "google":
-             call_kwargs["temperature"] = temp
+            call_kwargs["temperature"] = temp
 
-        # ---- Call the API ----
+        # Call the API and capture errors with tracebacks for CI logs
         try:
             if provider == "google":
-                # Google takes prompt positionally and temp via generation_config
                 response = method(prompt)
-            
-            elif provider == "huggingface":
-                # HuggingFace takes prompt positionally, others as kwargs
+            elif provider in {"huggingface", "huggingface_hub"}:
                 response = method(prompt, **call_kwargs)
-            
             else:
-                # All other APIs (OpenAI, Anthropic, Mistral, Cohere, XAI)
                 response = method(**call_kwargs)
         except Exception as e:
-            message = f"API call failed for {self.model_alias}: {e}"
+            tb = traceback.format_exc()
+            message = f"API call failed for {self.model_alias} ({provider}): {e}\n{tb}"
+            print(message)
             self.logger.add_info(CHAT, CRITICAL, message)
             if self.logger.info not in self.logger.episode_log:
                 self.logger.episode_log.append(self.logger.info)
@@ -151,28 +230,35 @@ class ModelClient:
                 return response.candidates[0].content.parts[0].text.strip()
             
             if provider == "anthropic":
-                return response.content[0].text.strip()
+                content = getattr(response, "content", None)
+                if isinstance(content, list) and len(content) > 0 and hasattr(content[0], "text"):
+                    return content[0].text.strip()
 
-            if provider == "openai" or provider == "mistral" or provider == "xai":
-                return response.choices[0].message.content.strip()
+            # OpenAI, Mistral, and xAI all use the same OpenAI-compatible response structure
+            if provider in {"openai", "mistral", "xai"}:
+                if hasattr(response, "choices") and len(response.choices) > 0:
+                    if hasattr(response.choices[0], "message") and hasattr(response.choices[0].message, "content"):
+                        return response.choices[0].message.content.strip()
 
             if provider == "cohere":
-                return response.text.strip() # From a 'generate' call
-            
-            if provider == "huggingface":
-                if isinstance(response, list) and "generated_text" in response[0]:
-                    return response[0]["generated_text"].strip()
-                return str(response).strip() # Fallback for text_generation
-            
-            # Fallbacks
+                if hasattr(response, "text"):
+                    return response.text.strip()
+
+            if provider in {"huggingface", "huggingface_hub"}:
+                if isinstance(response, list) and len(response) > 0 and isinstance(response[0], dict):
+                    if "generated_text" in response[0]:
+                        return response[0]["generated_text"].strip()
+
+            # Generic fallbacks
             if hasattr(response, "text"):
                 return response.text.strip()
             if isinstance(response, str):
                 return response.strip()
-
             return str(response)
         except Exception as e:
-            message = f"Failed to parse response from {self.model_alias}: {e}. Response: {str(response)[:200]}..."
+            tb = traceback.format_exc()
+            message = f"Failed to parse response from {self.model_alias}: {e}\n{tb}\nResponse repr: {repr(response)[:400]}"
+            print(message)
             self.logger.add_info(CHAT, CRITICAL, message)
             if self.logger.info not in self.logger.episode_log:
                 self.logger.episode_log.append(self.logger.info)
