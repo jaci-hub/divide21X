@@ -59,5 +59,19 @@ def get_llm_registry():
     return registry
 
 
+def get_rubric():
+    '''
+    returns the rubric from divide21x\grading\rubric.json
+    '''
+    rubric = None
+    try:
+        with open("divide21x/grading/rubric.json", "r") as f:
+            rubric = json.load(f)
+    except Exception as e:
+        rubric = None
+    
+    return rubric
+
+
 if __name__ == "__main__":
     print(get_utc_day())
