@@ -11,7 +11,7 @@ import numpy as np
 import math
 from divide21x.utils.logger import EpisodeLogger
 from divide21x.ground_truth.ground_truth import GroundTruth
-from divide21x.utils.util import get_rubric, get_utc_date, get_utc_datetime, get_utc_hour
+from divide21x.utils.util import get_rubric, get_utc_date, get_utc_datetime, get_utc_day, get_utc_hour
 
 
 BASE_DIR='./divide21x/evaluation/logs'
@@ -329,8 +329,10 @@ class Evaluator(Inspector):
         '''
         # get challenge state and action
         date = str(get_utc_date())
-        challenge_name = date + '.json'
-        challenge_file = os.path.join(CHALLENGES_DIR, challenge_name)
+        day = str(get_utc_day())
+        challenge_name = day + '.json'
+        challenge_path = os.path.join(CHALLENGES_DIR, date[:7])
+        challenge_file = os.path.join(challenge_path, challenge_name)
         data = None
         if not os.path.exists(challenge_file):
             message = f"No challenge found!"
