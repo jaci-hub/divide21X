@@ -303,11 +303,9 @@ class Evaluator(Inspector):
         checks if the LLM given state is actually generated
         '''
         # get challenge state and action
-        hour = get_utc_hour()
         date = str(get_utc_date())
-        challenge_dir = os.path.join(CHALLENGES_DIR, date)
-        challenge_name = str(hour) + '.json'
-        challenge_file = os.path.join(challenge_dir, challenge_name)
+        challenge_name = date + '.json'
+        challenge_file = os.path.join(CHALLENGES_DIR, challenge_name)
         data = None
         if not os.path.exists(challenge_file):
             message = f"No challenge found!"
