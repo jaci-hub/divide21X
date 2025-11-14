@@ -157,9 +157,9 @@
         "supports_json_mode": false,
         "reasoning_type": "symbolic",
         "api_key_env": "MISTRAL_API_KEY",
-        "import_module": "mistralai.client",
-        "client_class": "MistralClient",
-        "chat_method": "chat",
+        "import_module": "mistralai",
+        "client_class": "Mistral",
+        "chat_method": "chat.complete",
         "extra_args": {
             "model": "mistral-large-latest",
             "messages": [
