@@ -86,15 +86,17 @@ class ChallengeMaker():
         """
         # Use timezone-aware UTC datetime
         date = str(get_utc_date())
+        year_month = date[:7]
         day = get_utc_day()
         day_after = int(day) + 1 # i use day after becuase when i set it to digits it keeps it from being 1, for the first day of the month!
         
         # place challenge in the challenges dir
-        os.makedirs(CHALLENGES_DIR, exist_ok=True)
-        challenge_name = date + '.json'
-        challenge_file = os.path.join(CHALLENGES_DIR, challenge_name)
+        challenge_path = os.path.join(CHALLENGES_DIR, year_month)
+        os.makedirs(challenge_path, exist_ok=True)
+        challenge_name = str(day) + '.json'
+        challenge_file = os.path.join(challenge_path, challenge_name)
         challenge_name_tmp = challenge_name + '.tmp'
-        challenge_file_tmp = os.path.join(CHALLENGES_DIR, challenge_name_tmp)
+        challenge_file_tmp = os.path.join(challenge_path, challenge_name_tmp)
         
         # check if challenge already exists
         if os.path.isfile(challenge_file):
