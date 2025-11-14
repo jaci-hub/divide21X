@@ -34,7 +34,7 @@ if __name__ == "__main__":
     
     # plot
     for llm, scores in llm_scores.items():
-        days = list(range(1, len(scores)+1))
+        days = list(range(1, len(scores) + 1))
         plt.plot(days, scores, marker='o', label=llm)
         plt.xticks(days)
     
@@ -43,6 +43,7 @@ if __name__ == "__main__":
     plt.ylabel("Score (%)")
     plt.legend(title="LLM Alias")
     plt.grid(True)
+    plt.ylim(0, 100)
     plt.tight_layout()
 
     # save graph
