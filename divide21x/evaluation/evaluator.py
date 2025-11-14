@@ -11,7 +11,7 @@ import numpy as np
 import math
 from divide21x.utils.logger import EpisodeLogger
 from divide21x.ground_truth.ground_truth import GroundTruth
-from divide21x.utils.util import get_utc_date, get_utc_datetime, get_utc_hour
+from divide21x.utils.util import get_rubric, get_utc_date, get_utc_datetime, get_utc_hour
 
 
 BASE_DIR='./divide21x/evaluation/logs'
@@ -207,16 +207,16 @@ class Evaluator(Inspector):
                 self.logger.episode_log.append(self.logger.info)
             return (False, 0.0)
 
-        total_weight = 5  # number of components
-        matches = 0
+        rubric = get_rubric()
+        total_score = 0
 
         # (1) static_number
         if state1["s"] == state2["s"]:
-            matches += 1
+            total_score += rubric["state"]["s"]
 
         # (2) dynamic_number
         if state1["d"] == state2["d"]:
-            matches += 1
+            total_score += rubric["state"]["d"]
 
         # (3) available_digits_per_rindex
         adpr1 = state1["a"]
@@ -224,36 +224,59 @@ class Evaluator(Inspector):
         if isinstance(adpr1, dict) and isinstance(adpr2, dict):
             adpr1_norm = {str(k): v for k, v in adpr1.items()}
             adpr2_norm = {str(k): v for k, v in adpr2.items()}
-            if set(adpr1_norm.keys()) == set(adpr2_norm.keys()):
-                per_key_match = True
-                for k in adpr1_norm.keys():
+            # count the keys that match values
+            #   use the Sørensen–Dice coefficient
+            # (3.1) get lengths
+            adpr1_norm_length = len(adpr1_norm)
+            adpr2_norm_length = len(adpr2_norm)
+            # (3.2) get matching elements
+            matching_key_values = 0
+            for k in adpr1_norm.keys():
+                if k in adpr2_norm.keys():
                     v1 = sorted(adpr1_norm[k]) if isinstance(adpr1_norm[k], list) else []
                     v2 = sorted(adpr2_norm[k]) if isinstance(adpr2_norm[k], list) else []
-                    if v1 != v2:
-                        per_key_match = False
-                        break
-                if per_key_match:
-                    matches += 1
-
+                    if v1 == v2:
+                        matching_key_values += 1
+            # (3.3) get the similarity match
+            similarity_match = (2*matching_key_values)/(adpr1_norm_length + adpr2_norm_length)
+            # (3.4) get length penalty
+            length_penalty = 1 - (abs(adpr1_norm_length - adpr2_norm_length)/(adpr1_norm_length + adpr2_norm_length))
+            # (3.5) compute score
+            score = similarity_match*length_penalty
+            total_score += score*rubric["state"]["a"]
+        
         # (4) players
         players1 = state1["p"]
         players2 = state2["p"]
-        if isinstance(players1, list) and isinstance(players2, list) and len(players1) == len(players2):
+        if isinstance(players1, list) and isinstance(players2, list):
             # normalize players by sorting by id (or JSON string sort for safety)
             try:
-                norm1 = sorted(players1, key=lambda x: (x["i"], x["c"], x["m"]))
-                norm2 = sorted(players2, key=lambda x: (x["i"], x["c"], x["m"]))
-                if all(p1 == p2 for p1, p2 in zip(norm1, norm2)):
-                    matches += 1
+                # count the players that match values
+                #   use the Sørensen–Dice coefficient
+                # (4.1) get lengths
+                players1_length = len(players1)
+                players2_length = len(players2)
+                # (4.2) get matching players
+                matching_players = 0
+                for player in players1:
+                    if player in players2:
+                        matching_players += 1
+                # (4.3) get the similarity match
+                players_similarity_match = (2*matching_players)/(players1_length + players2_length)
+                # (4.4) get length penalty
+                players_length_penalty = 1 - (abs(players1_length - players2_length))/(players1_length + players2_length)
+                # (4.5) compute score
+                player_similarity_score = players_similarity_match*players_length_penalty
+                total_score += player_similarity_score*rubric["state"]["p"]
             except Exception:
                 pass
 
         # (5) player_turn
         if state1["t"] == state2["t"]:
-            matches += 1
+            total_score += rubric["state"]["t"]
 
         # --- Compute result ---
-        similarity_score = round((matches / total_weight) * 100, 2)
+        similarity_score = round(total_score, 2)
         equivalent = similarity_score == 100.0
         
         self.logger.add_info(STATE_COMPARISON, EQUIVALENT, equivalent)
