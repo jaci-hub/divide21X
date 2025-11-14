@@ -19,7 +19,8 @@ if __name__ == "__main__":
     
     llm_scores = {}
     # go through each file
-    for file in files:
+    for file_name in files:
+        file = os.path.join(RESULTS_DIR, file_name)
         data = None
         # get the data
         with open(file, "r") as f:
