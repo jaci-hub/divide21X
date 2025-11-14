@@ -37,17 +37,14 @@ jobs:
       - name: Step 1 — Generate Challenge
         run: python -m divide21x.challenge_maker.challenge_maker
 
-      - name: Wait for Challenge file
-        run: sleep 60
-
       - name: Step 2 — Query all LLM APIs
         run: python -m divide21x.llm_api.requestor
 
-      - name: Wait for LLM results
-        run: sleep 300
-
       - name: Step 3 — Evaluate and Grade
         run: python -m divide21x.envs.divide21x_main
+      
+      - name: Step 4 — Make graph
+        run: python -m divide21x.graph_maker.graph_maker
 
       - name: Commit and push updated results
         run: |
