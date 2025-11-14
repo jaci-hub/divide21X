@@ -17,8 +17,5 @@ xai-sdk>=1.4.0
 # === Utilities ===
 requests>=2.31.0
 
-# === Visualization ===
-matplotlib>=3.8.0
-
 # === Local module ===
 -e .

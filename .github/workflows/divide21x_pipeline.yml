@@ -42,9 +42,6 @@ jobs:
 
       - name: Step 3 — Evaluate and Grade
         run: python -m divide21x.envs.divide21x_main
-      
-      - name: Step 4 — Make graph
-        run: python -m divide21x.graph_maker.graph_maker
 
       - name: Commit and push updated results
         run: |
