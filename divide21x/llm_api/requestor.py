@@ -7,6 +7,7 @@ from divide21x.utils.logger import EpisodeLogger
 from divide21x.utils.util import get_llm_registry, get_utc_date, get_utc_datetime, get_utc_day, get_utc_hour
 
 
+CHALLENGES_DIR = './divide21x/challenges'
 RESULTS_DIR = './divide21x/results'
 BASE_DIR = './divide21x/llm_api/logs'
 # categories
@@ -39,12 +40,15 @@ class Requestor():
         # get date
         self.date = str(get_utc_date())
         self.day = str(get_utc_day())
+        self.challenge_file_name = self.day + ".json"
+        self.challenge_file = os.path.join(CHALLENGES_DIR, self.date[:7], self.challenge_file_name)
         
+        self.results_dir = os.path.join(RESULTS_DIR, self.date[:7])
         self.results = {}
         
     def get_prompt(self):
         try:
-            with open(f"divide21x/challenges/{self.date}.json", "r") as f:
+            with open(self.challenge_file, "r") as f:
                 challenge_data = json.load(f)
         except FileNotFoundError:
             challenge_data = None
@@ -141,12 +145,12 @@ class Requestor():
             
                 # write to results dir
                 if self.results:
-                    os.makedirs(RESULTS_DIR, exist_ok=True)
-                    
-                    result_name = str(self.date) + '.json'
-                    result_file = os.path.join(RESULTS_DIR, result_name)
-                    result_name_tmp = result_name + '.tmp'
-                    result_file_tmp = os.path.join(RESULTS_DIR, result_name_tmp)
+                    os.makedirs(self.results_dir, exist_ok=True)
+        
+                    result_file_name = self.day + '.json'
+                    result_file = os.path.join(self.results_dir, result_file_name)
+                    result_name_tmp = result_file_name + '.tmp'
+                    result_file_tmp = os.path.join(self.results_dir, result_name_tmp)
                     
                     # make the results file
                     with open(result_file_tmp, 'w') as tmp_file:

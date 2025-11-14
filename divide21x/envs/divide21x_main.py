@@ -52,11 +52,13 @@ class Divide21X(Grader):
 if __name__ == "__main__":
     # navigate the results dir
     date = str(get_utc_date())
+    day = str(get_utc_day())
     
     # get the results file
     data = None
-    file_name = date + '.json'
-    file = os.path.join(RESULTS_DIR, file_name)
+    file_name = day + '.json'
+    results_path = os.path.join(RESULTS_DIR, date[:7])
+    file = os.path.join(results_path, file_name)
     
     if os.path.exists(file):
         with open(file, 'r') as f:
