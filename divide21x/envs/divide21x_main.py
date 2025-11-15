@@ -94,7 +94,7 @@ if __name__ == "__main__":
         # sort leaderboard data by result descending
         leaderboard_data.sort(key=lambda x: x[2],  reverse=True)
         # create leaderboard csv file
-        with open(leaderboard_file, 'w') as f:
+        with open(leaderboard_file, mode="w", newline="") as f:
             header = ["Model", "Provider", "Score"]
             leaderboard_data.insert(0, header)
             writer = csv.writer(f)
