@@ -1,7 +1,7 @@
 [
     {
         "id": "openai-gpt4o",
-        "provider": "openai",
+        "provider": "OpenAI",
         "model": "gpt-4o",
         "alias": "GPT-4o",
         "category": "proprietary",
@@ -30,7 +30,7 @@
     },
     {
         "id": "openai-o1",
-        "provider": "openai",
+        "provider": "OpenAI",
         "model": "o1",
         "alias": "GPT-o1",
         "category": "proprietary",
@@ -59,7 +59,7 @@
     },
     {
         "id": "anthropic-claude-sonnet-4-5",
-        "provider": "anthropic",
+        "provider": "Anthropic",
         "model": "claude-sonnet-4-5-20250929",
         "alias": "Claude Sonnet 4.5",
         "category": "proprietary",
@@ -89,7 +89,7 @@
     },
     {
         "id": "anthropic-claude-haiku-4-5",
-        "provider": "anthropic",
+        "provider": "Anthropic",
         "model": "claude-haiku-4-5-20251001",
         "alias": "Claude Haiku 4.5",
         "category": "proprietary",
@@ -119,7 +119,7 @@
     },
     {
         "id": "anthropic-claude-opus-4-1",
-        "provider": "anthropic",
+        "provider": "Anthropic",
         "model": "claude-opus-4-1-20250805",
         "alias": "Claude Opus 4.1",
         "category": "proprietary",
@@ -149,7 +149,7 @@
     },
     {
         "id": "google-gemini25-pro",
-        "provider": "google",
+        "provider": "Google",
         "model": "gemini-2.5-pro",
         "alias": "Gemini 2.5 Pro",
         "category": "proprietary",
@@ -172,7 +172,7 @@
     },
     {
         "id": "mistral-large",
-        "provider": "mistral",
+        "provider": "Mistral",
         "model": "mistral-large-latest",
         "alias": "Mistral Large",
         "category": "open-weight",
@@ -200,7 +200,7 @@
     },
     {
         "id": "huggingface-mixtral8x7b",
-        "provider": "huggingface",
+        "provider": "Hugging Face",
         "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
         "alias": "Mixtral 8x7B",
         "category": "open-weight",
@@ -227,7 +227,7 @@
     },
     {
         "id": "llama3-hf",
-        "provider": "huggingface",
+        "provider": "Hugging Face",
         "model": "meta-llama/Meta-Llama-3-70B-Instruct",
         "alias": "Llama3 70B HF",
         "category": "open-weight",
@@ -254,7 +254,7 @@
     },
     {
         "id": "cohere-command-r-plus",
-        "provider": "cohere",
+        "provider": "Cohere",
         "model": "command-r-plus",
         "alias": "Command R+",
         "category": "proprietary",
@@ -284,7 +284,7 @@
     },
     {
         "id": "deepseek-math-7b",
-        "provider": "huggingface",
+        "provider": "Hugging Face",
         "model": "deepseek-ai/deepseek-math-7b",
         "alias": "DeepSeek-Math 7B",
         "category": "research",
@@ -311,7 +311,7 @@
     },
     {
         "id": "xai-grok-2",
-        "provider": "xai",
+        "provider": "xAI",
         "model": "grok-2",
         "alias": "Grok 2",
         "category": "proprietary",
