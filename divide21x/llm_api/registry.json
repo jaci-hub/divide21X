@@ -202,7 +202,7 @@
         "id": "huggingface-mixtral8x7b",
         "provider": "huggingface",
         "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
-        "alias": "Mixtral 8×7B",
+        "alias": "Mixtral 8x7B",
         "category": "open-weight",
         "family": "Mixtral",
         "release_date": "2023-12",
