@@ -1,4 +1,4 @@
-Model,Provider,Score
+Model,Provider,Score (%)
 Gemini 2.5 Pro,google,47.2
 GPT-4o,openai,40.76
 Claude Haiku 4.5,anthropic,40.76

@@ -1,4 +1,4 @@
-Model,Provider,Score
+Model,Provider,Score (%)
 Claude Opus 4.1,anthropic,48.0
 Claude Haiku 4.5,anthropic,46.23
 Gemini 2.5 Pro,google,44.0
