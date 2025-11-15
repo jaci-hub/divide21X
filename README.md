@@ -179,11 +179,15 @@ The Divide21 simulator computes the real final state.
 Each LLM’s prediction is compared numerically and structurally.
 
 
-### 4. Store Results & Scores
+### 4. Store Results, Scores & Leaderboards
 
-Stored at:
+- Scores are stored at:
 
-`divide21x/results/<year-month>/<day>.json`
+  `divide21x/results/<year-month>/<day>.json`
+
+- Leaderboards are stored at:
+
+  `divide21x/leaderboards/<year-month>/<day>.json`
 
 
 ### 5. Commit to Repository
