@@ -1,0 +1,13 @@
+Model,Provider,Score
+Claude Opus 4.1,anthropic,48.0
+Claude Haiku 4.5,anthropic,46.23
+Gemini 2.5 Pro,google,44.0
+GPT-4o,openai,42.23
+Mistral Large,mistral,42.23
+GPT-o1,openai,0.0
+Claude Sonnet 4.5,anthropic,0.0
+Mixtral 8×7B,,0.0
+Llama3 70B HF,huggingface,0.0
+Command R+,cohere,0.0
+DeepSeek-Math 7B,huggingface,0.0
+Grok 2,xai,0.0
