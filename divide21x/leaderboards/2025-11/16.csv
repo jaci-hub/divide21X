@@ -1,4 +1,4 @@
-Model,Provider,Proximity (%),Score
+Model,Provider,Proximity (%),Score (0/1)
 Gemini 2.5 Pro,Google,93.28,0
 GPT-4o,OpenAI,72.0,0
 Claude Opus 4.1,Anthropic,70.63,0
