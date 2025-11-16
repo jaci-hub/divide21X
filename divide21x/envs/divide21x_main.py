@@ -15,7 +15,8 @@ LEADERBOARDS_DIR = './divide21x/leaderboards'
 # categories
 ENVIRONMENT = 'environment'
 RUN = 'run'
-RESULT = 'result'
+SCORE = 'score'
+PROXIMITY = 'proximity'
 ANSWER = 'answer'
 # types
 CRITICAL = 'critical'
@@ -29,25 +30,25 @@ class Divide21X(Grader):
     def __init__(self, action=None, state=None):
         super().__init__(action, state)
         
-        self.result = 0
+        self.proximity = 0
         self.model = None
         
         # Logging
         self.logger = EpisodeLogger(BASE_DIR)
     
     def start(self):
-        self.result = self.grade_submission2()
+        self.proximity = self.grade_submission2()
         
         self.logger.add_info(ENVIRONMENT, DONE, True)
-        self.logger.add_info(ENVIRONMENT, RESULT, self.result)
+        self.logger.add_info(ENVIRONMENT, PROXIMITY, self.proximity)
         # log
         if self.logger.info not in self.logger.episode_log:
             self.logger.episode_log.append(self.logger.info)
         
         self.logger.save_episode()
     
-    def get_result(self):
-        return self.result
+    def get_proximity(self):
+        return self.proximity
     
 
 
@@ -76,8 +77,11 @@ if __name__ == "__main__":
         for key, value in data.items():
             divide21x = Divide21X(state=value[ANSWER])
             divide21x.start()
-            # add result
-            value[RESULT] = divide21x.get_result()
+            # add proximity
+            value[PROXIMITY] = divide21x.get_proximity()
+            # add score
+            #   because Divide21X is deterministic, only 100% proximity (meaning exact match to the correct answer) gets a score of 1
+            value[SCORE] = 1 if value[PROXIMITY] == 100 else 0
             # for leaderboard
             provider = None
             registry = get_llm_registry()
@@ -85,17 +89,17 @@ if __name__ == "__main__":
                 if entry['alias'] == key:
                     provider = entry['provider']
                     break
-            leaderboard_data.append([key, provider, value[RESULT]])
+            leaderboard_data.append([key, provider, value[PROXIMITY], value[SCORE]])
         
         # update the file
         with open(file, 'w') as f:
             json.dump(data, f, indent=4)
         
-        # sort leaderboard data by result descending
+        # sort leaderboard data by proximity descending
         leaderboard_data.sort(key=lambda x: x[2],  reverse=True)
         # create leaderboard csv file
         with open(leaderboard_file, mode="w", newline="") as f:
-            header = ["Model", "Provider", "Score (%)"]
+            header = ["Model", "Provider", "Proximity (%)", "Score"]
             leaderboard_data.insert(0, header)
             writer = csv.writer(f)
             writer.writerows(leaderboard_data)
