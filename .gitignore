@@ -9,3 +9,8 @@ __pycache__/
 .env
 *.key
 *.secrets.json
+
+# Keep manually generated data from being tracked
+challenges/
+results/
+leaderboards/
