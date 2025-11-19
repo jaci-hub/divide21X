@@ -77,6 +77,84 @@
       "t": int
     }
   },
+  "example_3": {
+    "z": {
+      "s": int,
+      "d": int,
+      "a": {
+        int: [int, int, ...]
+      },
+      "p": [
+        {
+          "i": int,
+          "c": int,
+          "m": int
+        },
+        ...
+      ],
+      "t": int
+    },
+    "a": {
+      "v": int,
+      "g": int,
+      "r": int | null
+    },
+    "o": {
+      "s": int,
+      "d": int,
+      "a": {
+        int: [int, int, ...]
+      },
+      "p": [
+        {
+          "i": int,
+          "c": int,
+          "m": int
+        },
+        ...
+      ],
+      "t": int
+    }
+  },
+  "example_4": {
+    "z": {
+      "s": int,
+      "d": int,
+      "a": {
+        int: [int, int, ...]
+      },
+      "p": [
+        {
+          "i": int,
+          "c": int,
+          "m": int
+        },
+        ...
+      ],
+      "t": int
+    },
+    "a": {
+      "v": int,
+      "g": int,
+      "r": int | null
+    },
+    "o": {
+      "s": int,
+      "d": int,
+      "a": {
+        int: [int, int, ...]
+      },
+      "p": [
+        {
+          "i": int,
+          "c": int,
+          "m": int
+        },
+        ...
+      ],
+      "t": int
+    }
+  },
   "challenge": {
     "z": {
       "s": int,

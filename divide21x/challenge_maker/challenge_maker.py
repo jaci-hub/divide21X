@@ -22,45 +22,85 @@ HASH = 'hash'
 
 class ChallengeMaker():
     def __init__(self):
-        # Challenge examples
-        self.digit_change_example_state_1 = {
+        # Challenge example 1: digit change
+        self.digit_change_example_1_state_1 = {
             "s": 43,
             "d": 45,
             "a": {0: [0, 1, 2, 4, 6, 7, 8, 9], 1: [1, 2, 3, 5, 6, 7, 8, 9]},
             "p": [{"i": 0, "c": -6, "m": 0}, {"i": 1, "c": 0, "m": 1}],
             "t": 1
         }
-        self.digit_change_example_action = {
+        self.digit_change_example_1_action = {
             "v": False,
             "g": 2,
             "r": 0
         }
-        self.digit_change_example_state_2 = {
+        self.digit_change_example_1_state_2 = {
             "s": 43,
             "d": 42,
             "a": {0: [0, 1, 4, 6, 7, 8, 9], 1: [1, 2, 3, 5, 6, 7, 8, 9]},
             "p": [{"i": 0, "c": -6, "m": 1}, {"i": 1, "c": 0, "m": 0}],
             "t": 0
         }
-        
-        self.division_example_state_1 = {
+        # Challenge example 2: digit change
+        self.digit_change_example_2_state_1 = {
+            "s": 6989,
+            "d": 6876,
+            "a": {0: [0, 1, 2, 3, 4, 5, 7, 8], 1: [0, 1, 2, 3, 4, 6, 9], 2: [0, 1, 2, 3, 4, 5, 6, 7], 3: [1, 2, 3, 4, 5, 7, 8, 9]},
+            "p": [{"i": 0, "c": 0, "m": 0}, {"i": 1, "c": 0, "m": 1}, {"i": 2, "c": 0, "m": 0}],
+            "t": 1
+        }
+        self.digit_change_example_2_action = {
+            "v": False,
+            "g": 3,
+            "r": 2
+        }
+        self.digit_change_example_2_state_2 = {
+            "s": 6989,
+            "d": 6376,
+            "a": {0: [0, 1, 2, 3, 4, 5, 7, 8], 1: [0, 1, 2, 3, 4, 6, 9], 2: [0, 1, 2, 4, 5, 6, 7], 3: [1, 2, 3, 4, 5, 7, 8, 9]},
+            "p": [{"i": 0, "c": 0, "m": 0}, {"i": 1, "c": 0, "m": 0}, {"i": 2, "c": 0, "m": 1}],
+            "t": 2
+        }
+        # Challenge example 3: good division
+        self.good_division_example_state_1 = {
             "s": 523,
             "d": 195,
             "a": {0: [0, 1, 2, 4, 6, 7, 8, 9], 1: [0, 1, 3, 4, 5, 6, 7], 2: [2, 3, 4, 6, 7, 8, 9]},
             "p": [{"i": 0, "c": -27, "m": 0}, {"i": 1, "c": -11, "m": 0}, {"i": 2, "c": -16, "m": 0}, {"i": 3, "c": 3, "m": 1}],
             "t": 3
         }
-        self.division_example_action = {
+        self.good_division_example_action = {
             "v": True,
             "g": 3,
             "r": None
         }
-        self.division_example_state_2 = {
+        self.good_division_example_state_2 = {
             "s": 523,
             "d": 65,
             "a": {0: [0, 1, 2, 4, 6, 7, 8, 9], 1: [1, 3, 4, 5, 7]},
             "p": [{"i": 0, "c": -27, "m": 0}, {"i": 1, "c": -11, "m": 0}, {"i": 2, "c": -16, "m": 0}, {"i": 3, "c": 6, "m": 1}],
             "t": 3
+        }
+        # Challenge example 4: bad division
+        self.bad_division_example_state_1 = {
+            "s": 65929,
+            "d": 2271,
+            "a": {0: [0, 3, 5, 7, 8], 1: [0, 3, 5, 6, 9], 2: [3, 5, 6, 7, 8], 3: [1, 6, 8, 9]},
+            "p": [{"i": 0, "c": 9, "m": 0}, {"i": 1, "c": -20, "m": 1}],
+            "t": 1
+        }
+        self.bad_division_example_action = {
+            "v": True,
+            "g": 9,
+            "r": None
+        }
+        self.bad_division_example_state_2 = {
+            "s": 65929,
+            "d": 2271,
+            "a": {0: [0, 3, 5, 7, 8], 1: [0, 3, 5, 6, 9], 2: [3, 5, 6, 7, 8], 3: [1, 6, 8, 9]},
+            "p": [{"i": 0, "c": 9, "m": 0}, {"i": 1, "c": -29, "m": 1}],
+            "t": 1
         }
         
         # challenge state and action
@@ -162,14 +202,24 @@ class ChallengeMaker():
         # (1) examples
         challenge = {}
         challenge["example_1"] = {
-            "z": self.digit_change_example_state_1,
-            "a": self.digit_change_example_action,
-            "o": self.digit_change_example_state_2,
+            "z": self.digit_change_example_1_state_1,
+            "a": self.digit_change_example_1_action,
+            "o": self.digit_change_example_1_state_2,
         }
         challenge["example_2"] = {
-            "z": self.division_example_state_1,
-            "a": self.division_example_action,
-            "o": self.division_example_state_2,
+            "z": self.digit_change_example_2_state_1,
+            "a": self.digit_change_example_2_action,
+            "o": self.digit_change_example_2_state_2,
+        }
+        challenge["example_3"] = {
+            "z": self.good_division_example_state_1,
+            "a": self.good_division_example_action,
+            "o": self.good_division_example_state_2,
+        }
+        challenge["example_4"] = {
+            "z": self.bad_division_example_state_1,
+            "a": self.bad_division_example_action,
+            "o": self.bad_division_example_state_2,
         }
         # (2) challenge
         challenge["challenge"] = {
