@@ -43,9 +43,7 @@ This involves:
 
 Each daily task provides:
 
-- a solved example (`example_1`)
-
-- a second solved example (`example_2`)
+- four solved examples (`example_1`, `example_2`, `example_3`, `example_4`)
 
 - an unsolved `challenge`
 
@@ -129,13 +127,23 @@ Essentially, Divide21X is a stress test for true reasoning. LLMs that perform we
     "o": { ... final state ... }
   },
   "example_2": {
-    "z": { ... },
-    "a": { ... },
-    "o": { ... }
+    "z": { ... initial state ... },
+    "a": { ... action ... },
+    "o": { ... final state ... }
+  },
+  "example_3": {
+    "z": { ... initial state ... },
+    "a": { ... action ... },
+    "o": { ... final state ... }
+  },
+  "example_4": {
+    "z": { ... initial state ... },
+    "a": { ... action ... },
+    "o": { ... final state ... }
   },
   "challenge": {
-    "z": { ... },
-    "a": { ... },
+    "z": { ... initial state ... },
+    "a": { ... action ... },
     "o": missing --> LLM MUST FILL THIS IN
   }
 }
