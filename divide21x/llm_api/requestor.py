@@ -58,7 +58,7 @@ class Requestor():
 
         # Construct the few-shot + challenge prompt
         prompt_lines = []
-        for example_key in ["example_1", "example_2"]:
+        for example_key in ["example_1", "example_2", "example_3", "example_4"]:
             ex = challenge_data[example_key]
             prompt_lines.append(f"Example:\n{Z}: {json.dumps(ex[Z])}\n"
                                 f"{A}: {json.dumps(ex[A])}\n"
