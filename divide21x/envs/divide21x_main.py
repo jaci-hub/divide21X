@@ -51,59 +51,49 @@ class Divide21X(Grader):
         return self.proximity
     
 
-def handle_average_proximity():
-    # calculate average proximity
-    date = str(get_utc_date())
-    day = str(get_utc_day())
-    proximity_data = {}
-    for root, dirs, files in os.walk(RESULTS_DIR):
-        for file in files:
-            if file.endswith('.json'):
-                file_path = os.path.join(root, file)
-                with open(file_path, 'r') as f:
-                    data = json.load(f)
-                    for key, value in data.items():
-                        if key not in proximity_data:
-                            proximity_data[key] = []
-                        proximity_data[key].append(value[PROXIMITY])
-    
-    # write average proximity to csv
-    average_proximity_file = os.path.join(LEADERBOARDS_DIR, 'average_proximity.csv')
-    with open(average_proximity_file, mode="w", newline="") as f:
-        header = ["Model", "Average Proximity (%)"]
-        writer = csv.writer(f)
-        writer.writerow(header)
-        for key, proximities in proximity_data.items():
-            average_proximity = sum(proximities) / len(proximities)
-            writer.writerow([key, average_proximity])
-
-
-def handle_average_score():
-    # calculate average score
-    date = str(get_utc_date())
-    day = str(get_utc_day())
-    score_data = {}
-    for root, dirs, files in os.walk(RESULTS_DIR):
-        for file in files:
-            if file.endswith('.json'):
-                file_path = os.path.join(root, file)
-                with open(file_path, 'r') as f:
-                    data = json.load(f)
-                    for key, value in data.items():
-                        if key not in score_data:
-                            score_data[key] = []
-                        score_data[key].append(value[SCORE])
-    
-    # write average score to csv
-    average_score_file = os.path.join(LEADERBOARDS_DIR, 'average_score.csv')
-    with open(average_score_file, mode="w", newline="") as f:
-        header = ["Model", "Average Score (%)"]
-        writer = csv.writer(f)
-        writer.writerow(header)
-        for key, scores in score_data.items():
-            average_score = (sum(scores) / len(scores)) * 100.00
-            writer.writerow([key, average_score])
-
+def handle_averages():
+    for metric in [PROXIMITY, SCORE]:
+        date = str(get_utc_date())
+        day = str(get_utc_day())
+        metric_data = {}
+        for root, dirs, files in os.walk(RESULTS_DIR):
+            for file in files:
+                if file.endswith('.json'):
+                    file_path = os.path.join(root, file)
+                    with open(file_path, 'r') as f:
+                        data = json.load(f)
+                        for alias, value in data.items():
+                            if alias not in metric_data:
+                                metric_data[alias] = []
+                            metric_data[alias].append(value[metric])
+        
+        # sort in descending order
+        metric_data = sorted(metric_data.items(), key=lambda x: (sum(x[1]) / len(x[1])), reverse=True)
+        metric_data = dict(metric_data)
+        
+        # write averages to csv
+        average_metric_file = os.path.join(LEADERBOARDS_DIR, date[:7], f'average_{metric}.csv')
+        with open(average_metric_file, mode="w", newline="") as f:
+            # write header
+            header = ["Model", "Provider", f"Average {metric.capitalize()} (%)"]
+            writer = csv.writer(f)
+            writer.writerow(header)
+            for alias, metric_value in metric_data.items():
+                average_metric = sum(metric_value) / len(metric_value)
+                # make sure it's a percentage
+                if metric == SCORE:
+                    average_metric = average_metric * 100
+                # round to 2 decimal places
+                average_metric = round(average_metric, 2)
+                # get provider
+                provider = None
+                registry = get_llm_registry()
+                for entry in registry:
+                    if entry['alias'] == alias:
+                        provider = entry['provider']
+                        break
+                # write row
+                writer.writerow([alias, provider, average_metric])
 
 if __name__ == "__main__":
     # navigate the results dir
@@ -157,8 +147,5 @@ if __name__ == "__main__":
             writer = csv.writer(f)
             writer.writerows(leaderboard_data)
         
-        # handle average proximity
-        handle_average_proximity()
-        # handle average score
-        handle_average_score()
-    
+        # handle averages
+        handle_averages()
