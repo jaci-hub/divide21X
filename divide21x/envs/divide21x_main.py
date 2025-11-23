@@ -51,6 +51,59 @@ class Divide21X(Grader):
         return self.proximity
     
 
+def handle_average_proximity():
+    # calculate average proximity
+    date = str(get_utc_date())
+    day = str(get_utc_day())
+    proximity_data = {}
+    for root, dirs, files in os.walk(RESULTS_DIR):
+        for file in files:
+            if file.endswith('.json'):
+                file_path = os.path.join(root, file)
+                with open(file_path, 'r') as f:
+                    data = json.load(f)
+                    for key, value in data.items():
+                        if key not in proximity_data:
+                            proximity_data[key] = []
+                        proximity_data[key].append(value[PROXIMITY])
+    
+    # write average proximity to csv
+    average_proximity_file = os.path.join(LEADERBOARDS_DIR, 'average_proximity.csv')
+    with open(average_proximity_file, mode="w", newline="") as f:
+        header = ["Model", "Average Proximity (%)"]
+        writer = csv.writer(f)
+        writer.writerow(header)
+        for key, proximities in proximity_data.items():
+            average_proximity = sum(proximities) / len(proximities)
+            writer.writerow([key, average_proximity])
+
+
+def handle_average_score():
+    # calculate average score
+    date = str(get_utc_date())
+    day = str(get_utc_day())
+    score_data = {}
+    for root, dirs, files in os.walk(RESULTS_DIR):
+        for file in files:
+            if file.endswith('.json'):
+                file_path = os.path.join(root, file)
+                with open(file_path, 'r') as f:
+                    data = json.load(f)
+                    for key, value in data.items():
+                        if key not in score_data:
+                            score_data[key] = []
+                        score_data[key].append(value[SCORE])
+    
+    # write average score to csv
+    average_score_file = os.path.join(LEADERBOARDS_DIR, 'average_score.csv')
+    with open(average_score_file, mode="w", newline="") as f:
+        header = ["Model", "Average Score (%)"]
+        writer = csv.writer(f)
+        writer.writerow(header)
+        for key, scores in score_data.items():
+            average_score = (sum(scores) / len(scores)) * 100.00
+            writer.writerow([key, average_score])
+
 
 if __name__ == "__main__":
     # navigate the results dir
@@ -103,3 +156,9 @@ if __name__ == "__main__":
             leaderboard_data.insert(0, header)
             writer = csv.writer(f)
             writer.writerows(leaderboard_data)
+        
+        # handle average proximity
+        handle_average_proximity()
+        # handle average score
+        handle_average_score()
+    
