@@ -1,6 +1,6 @@
 Model,Provider,Average Score (%)
-Claude Sonnet 4.5,Anthropic,20.0
-Claude Opus 4.1,Anthropic,20.0
+Claude Sonnet 4.5,Anthropic,16.67
+Claude Opus 4.1,Anthropic,16.67
 GPT-4o,OpenAI,0.0
 GPT-o1,OpenAI,0.0
 Claude Haiku 4.5,Anthropic,0.0
