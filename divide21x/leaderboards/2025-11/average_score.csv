@@ -1,10 +1,10 @@
 Model,Provider,Average Score (%)
-GPT-4o,OpenAI,22.22
-Claude Sonnet 4.5,Anthropic,22.22
-Gemini 2.5 Pro,Google,22.22
-Claude Opus 4.1,Anthropic,11.11
+GPT-4o,OpenAI,30.0
+Claude Sonnet 4.5,Anthropic,30.0
+Gemini 2.5 Pro,Google,30.0
+Claude Haiku 4.5,Anthropic,10.0
+Claude Opus 4.1,Anthropic,10.0
 GPT-o1,OpenAI,0.0
-Claude Haiku 4.5,Anthropic,0.0
 Mistral Large,Mistral,0.0
 Mixtral 8x7B,Hugging Face,0.0
 Llama3 70B HF,Hugging Face,0.0
