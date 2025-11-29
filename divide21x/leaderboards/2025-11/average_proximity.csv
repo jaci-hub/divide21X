@@ -1,10 +1,10 @@
 Model,Provider,Average Proximity (%)
-GPT-4o,OpenAI,68.26
-Gemini 2.5 Pro,Google,64.14
-Mistral Large,Mistral,60.5
-Claude Haiku 4.5,Anthropic,58.65
-Claude Sonnet 4.5,Anthropic,52.59
-Claude Opus 4.1,Anthropic,17.2
+GPT-4o,OpenAI,68.02
+Claude Haiku 4.5,Anthropic,59.36
+Gemini 2.5 Pro,Google,58.31
+Mistral Large,Mistral,55.0
+Claude Sonnet 4.5,Anthropic,47.81
+Claude Opus 4.1,Anthropic,15.64
 GPT-o1,OpenAI,0.0
 Mixtral 8x7B,Hugging Face,0.0
 Llama3 70B HF,Hugging Face,0.0
