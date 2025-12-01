@@ -56,16 +56,17 @@ def handle_averages():
         date = str(get_utc_date())
         day = str(get_utc_day())
         metric_data = {}
-        for root, dirs, files in os.walk(RESULTS_DIR):
-            for file in files:
-                if file.endswith('.json'):
-                    file_path = os.path.join(root, file)
-                    with open(file_path, 'r') as f:
-                        data = json.load(f)
-                        for alias, value in data.items():
-                            if alias not in metric_data:
-                                metric_data[alias] = []
-                            metric_data[alias].append(value[metric])
+        # only consider files in the current month
+        for file in os.listdir(os.path.join(RESULTS_DIR, date[:7])):
+            if not file.endswith('.json'):
+                continue
+            file_path = os.path.join(RESULTS_DIR, date[:7], file)
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+                for alias, value in data.items():
+                    if alias not in metric_data:
+                        metric_data[alias] = []
+                    metric_data[alias].append(value[metric])
         
         # sort in descending order
         metric_data = sorted(metric_data.items(), key=lambda x: (sum(x[1]) / len(x[1])), reverse=True)
