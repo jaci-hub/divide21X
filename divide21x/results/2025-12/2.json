@@ -1,0 +1,285 @@
+{
+    "GPT-4o": {
+        "answer": {
+            "s": 979,
+            "d": 979,
+            "a": {
+                "0": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ],
+                "1": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    8,
+                    9
+                ],
+                "2": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -5,
+                    "m": 0
+                },
+                {
+                    "i": 1,
+                    "c": 0,
+                    "m": 1
+                }
+            ],
+            "t": 1
+        },
+        "proximity": 68.33,
+        "score": 0
+    },
+    "GPT-o1": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for GPT-o1]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Claude Sonnet 4.5": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[a.r]`\n  - Player positions `p` are modified (swapping `m` values or changing `c`)\n  - `t` may change (alternates between players)\n\n- When `a.v = true`:\n  - Game ends, `a` may be simplified\n  - Player `c` values change\n\nFor the challenge:\n- `z.s = 979, z.d = 979`\n- `a.v = false, a.g = 4, a.r = 1`\n- `z.t = 0` (player 0's turn)\n\nFollowing the pattern from example 1 (similar structure):\n- Remove digit `4` from `a[\"1\"]`: `[0, 1, 2, 3, 4, 5, 6, 8, 9]` \u00e2\u0086\u0092 `[0, 1, 2, 3, 5, 6, 8, 9]`\n- Update `d`: appears to subtract powers of 10 based on position. With `g=4` and `r=1`, `d = 979 - 400 = 579`\n- Swap `m` values in `p`: player 0 goes from `m=1` to `m=0`, player 1 goes from `m=0` to `m=1`\n- Change `t` from `0` to `1`\n\n```json\n{\"s\": 979, \"d\": 579, \"a\": {\"0\": [0, 1, 2, 3, 4, 5, 6, 7, 8], \"1\": [0, 1, 2, 3, 5, 6, 8, 9], \"2\": [1, 2, 3, 4, 5, 6, 7, 8]}, \"p\": [{\"i\": 0, \"c\": -5, \"m\": 0}, {\"i\": 1, \"c\": 0, \"m\": 1}], \"t\": 1}"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Claude Haiku 4.5": {
+        "answer": {
+            "s": 979,
+            "d": 979,
+            "a": {
+                "0": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ],
+                "1": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    8,
+                    9
+                ],
+                "2": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -5,
+                    "m": 0
+                },
+                {
+                    "i": 1,
+                    "c": 0,
+                    "m": 1
+                }
+            ],
+            "t": 1
+        },
+        "proximity": 68.33,
+        "score": 0
+    },
+    "Claude Opus 4.1": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[\"1\"]`: [0,1,2,3,4,5,6,8,9] \u00e2\u0086\u0092 [0,1,2,3,5,6,8,9]\n- Update d: 979 - 4*10^(2-1) = 979 - 40 = 939\n- Swap m values for players at indices 1 and 2\n- Increment t: 0 + 1 = 1\n\n```json\n{\"s\": 979, \"d\": 939, \"a\": {\"0\": [0, 1, 2, 3, 4, 5, 6, 7, 8], \"1\": [0, 1, 2, 3, 5, 6, 8, 9], \"2\": [1, 2, 3, 4, 5, 6, 7, 8]}, \"p\": [{\"i\": 0, \"c\": -5, \"m\": 0}, {\"i\": 1, \"c\": 0, \"m\": 1}], \"t\": 1}"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Gemini 2.5 Pro": {
+        "answer": {
+            "s": 979,
+            "d": 949,
+            "a": {
+                "0": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ],
+                "1": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    5,
+                    6,
+                    8,
+                    9
+                ],
+                "2": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -5,
+                    "m": 0
+                },
+                {
+                    "i": 1,
+                    "c": 0,
+                    "m": 1
+                }
+            ],
+            "t": 1
+        },
+        "proximity": 100.0,
+        "score": 1
+    },
+    "Mistral Large": {
+        "answer": {
+            "s": 979,
+            "d": 979,
+            "a": {
+                "0": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ],
+                "1": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    8,
+                    9
+                ],
+                "2": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -5,
+                    "m": 0
+                },
+                {
+                    "i": 1,
+                    "c": 0,
+                    "m": 1
+                }
+            ],
+            "t": 1
+        },
+        "proximity": 68.33,
+        "score": 0
+    },
+    "Mixtral 8x7B": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Mixtral 8x7B]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Llama3 70B HF": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Llama3 70B HF]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Command R+": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Command R+]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "DeepSeek-Math 7B": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for DeepSeek-Math 7B]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Grok 2": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Grok 2]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    }
+}
