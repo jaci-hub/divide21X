@@ -1,0 +1,300 @@
+{
+    "GPT-4o": {
+        "answer": {
+            "s": 7627,
+            "d": 9541,
+            "a": {
+                "0": [
+                    0,
+                    2,
+                    4,
+                    5,
+                    6,
+                    8
+                ],
+                "1": [
+                    0,
+                    1,
+                    3,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "2": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    7,
+                    9
+                ],
+                "3": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    8
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -21,
+                    "m": 1
+                },
+                {
+                    "i": 1,
+                    "c": -5,
+                    "m": 0
+                }
+            ],
+            "t": 0
+        },
+        "proximity": 70.25,
+        "score": 0
+    },
+    "GPT-o1": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for GPT-o1]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Claude Sonnet 4.5": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[\"a.r\"]` array\n- Swap `m` values between the two players\n- Toggle `t` (if 1\u00e2\u0086\u00920 or 0\u00e2\u0086\u00921, or cycle through players)\n- Update `d` by subtracting/adding based on the removed element\n\nFor the challenge:\n- `a.g = 2, a.r = 0`: Remove 2 from group \"0\" array\n- Group \"0\" is `[0, 2, 4, 5, 6, 8]` \u00e2\u0086\u0092 becomes `[0, 4, 5, 6, 8]`\n- Swap `m` values: player 0 gets `m=1`, player 1 gets `m=0`\n- Toggle `t` from 1 to 0\n- Update `d`: 9841 - 2*500 = 8841 (approximating the pattern)\n\nLet me recalculate `d` more carefully by looking at the digit changes. In example 1, removing 2 from position changes d from 45 to 42 (difference of 3). The pattern seems to involve the positional value.\n\nFor the challenge, removing 2 from group \"0\" at position affecting thousands place: 9841 \u00e2\u0086\u0092 9341 (removing 500, which is 2*250 or related calculation).\n\n```json\n{\"s\": 7627, \"d\": 9341, \"a\": {\"0\": [0, 4, 5, 6, 8], \"1\": [0, 1, 3, 5, 6, 7, 8, 9], \"2\": [1, 2, 3, 4, 5, 7, 9], \"3\": [1, 2, 3, 4, 5, 6, 8]}, \"p\": [{\"i\": 0, \"c\": -21, \"m\": 1}, {\"i\": 1, \"c\": -5, \"m\": 0}], \"t\": 0}"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Claude Haiku 4.5": {
+        "answer": {
+            "s": 7627,
+            "d": 9841,
+            "a": {
+                "0": [
+                    0,
+                    2,
+                    4,
+                    5,
+                    6,
+                    8
+                ],
+                "1": [
+                    0,
+                    1,
+                    3,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "2": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    7,
+                    9
+                ],
+                "3": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    8
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -21,
+                    "m": 0
+                },
+                {
+                    "i": 1,
+                    "c": -5,
+                    "m": 0
+                }
+            ],
+            "t": 2
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Claude Opus 4.1": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[\"0\"] = [0, 2, 4, 5, 6, 8], digit 2 is present\n- After removing 2: o.a[\"0\"] = [0, 4, 5, 6, 8]\n- o.d remains 9841 (no change to the actual number, just the available digits)\n- o.p[0].m flips from 0 to 1\n- o.t = (z.t + a.r) = 1 + 0 = 1\n\nWait, let me reconsider the d value pattern. Looking more carefully:\n- In example 1: removing digit 2 from position 0 of 45 gives 42 (but 45 doesn't have a 2 at position 0)\n- In example 2: 6876 \u00e2\u0086\u0092 6376 (changing position 2 from 8 to 3, but we're removing 3?)\n\nActually, I think the pattern is that when removing a digit, if that digit appears in position a.r of z.d, it gets replaced with the next available digit. Let me recalculate:\n\nFor the challenge, z.d = 9841, position 0 has digit 9. After removing digit 2 from available digits at position 0, we need to check if the current digit (9) is still valid. Since 9 is not in z.a[\"0\"], the digit at position 0 needs to change.\n\nAfter removing 2, o.a[\"0\"] = [0, 4, 5, 6, 8]. The digit 9 is not available, so we need to pick a new digit. Following the pattern, it seems to pick the highest available digit that's less than 9, which would be 8.\n\nSo o.d = 8841\n\n{\"s\": 7627, \"d\": 8841, \"a\": {\"0\": [0, 4, 5, 6, 8], \"1\": [0, 1, 3, 5, 6, 7, 8, 9], \"2\": [1, 2, 3, 4, 5, 7, 9], \"3\": [1, 2, 3, 4, 5, 6, 8]}, \"p\": [{\"i\": 0, \"c\": -21, \"m\": 1}, {\"i\": 1, \"c\": -5, \"m\": 1}], \"t\": 0}"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Gemini 2.5 Pro": {
+        "answer": {
+            "s": 7627,
+            "d": 9838,
+            "a": {
+                "0": [
+                    0,
+                    4,
+                    5,
+                    6,
+                    8
+                ],
+                "1": [
+                    0,
+                    1,
+                    3,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "2": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    7,
+                    9
+                ],
+                "3": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    8
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -21,
+                    "m": 1
+                },
+                {
+                    "i": 1,
+                    "c": -5,
+                    "m": 0
+                }
+            ],
+            "t": 0
+        },
+        "proximity": 76.0,
+        "score": 0
+    },
+    "Mistral Large": {
+        "answer": {
+            "s": 7627,
+            "d": 7841,
+            "a": {
+                "0": [
+                    0,
+                    2,
+                    4,
+                    5,
+                    6,
+                    8
+                ],
+                "1": [
+                    0,
+                    1,
+                    3,
+                    5,
+                    6,
+                    7,
+                    8
+                ],
+                "2": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    7,
+                    9
+                ],
+                "3": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    8
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -21,
+                    "m": 1
+                },
+                {
+                    "i": 1,
+                    "c": -5,
+                    "m": 0
+                }
+            ],
+            "t": 0
+        },
+        "proximity": 64.5,
+        "score": 0
+    },
+    "Mixtral 8x7B": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Mixtral 8x7B]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Llama3 70B HF": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Llama3 70B HF]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Command R+": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Command R+]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "DeepSeek-Math 7B": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for DeepSeek-Math 7B]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Grok 2": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Grok 2]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    }
+}

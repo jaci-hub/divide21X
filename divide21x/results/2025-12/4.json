@@ -1,0 +1,266 @@
+{
+    "GPT-4o": {
+        "answer": {
+            "s": 38911,
+            "d": -1,
+            "a": {
+                "0": [
+                    5
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -17,
+                    "m": 1
+                },
+                {
+                    "i": 1,
+                    "c": 2,
+                    "m": 0
+                },
+                {
+                    "i": 2,
+                    "c": -27,
+                    "m": 0
+                },
+                {
+                    "i": 3,
+                    "c": -2,
+                    "m": 0
+                },
+                {
+                    "i": 4,
+                    "c": -31,
+                    "m": 0
+                }
+            ],
+            "t": 0
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "GPT-o1": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for GPT-o1]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Claude Sonnet 4.5": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[\"0\"] = [3, 5]` \u00e2\u0086\u0092 remove `3` \u00e2\u0086\u0092 `[5]`\n- Calculate new `d`: The pattern shows `d` changes based on removing digits\n- Swap `m` values: position 0 (currently `m=0`) and position 4 (currently `m=1`)\n- Set `t = 0`\n\nFor `d` calculation: Looking at example 1, when digit 2 is removed from group \"0\", `d` changes from 45 to 42 (difference of 3, and 2 was at index 2). The pattern seems to involve the digit value and its contribution.\n\nAnalyzing more carefully: `d` appears to decrease by removing the digit's contribution. With digit 3 at position in group 0, and current `d=2`, removing 3 from the available set changes the denominator calculation.\n\nGiven the pattern, new `d` should be: 2 - 3 = -1 or recalculated based on remaining digits.\n\nLooking at the structure more carefully, `d` seems to represent remaining possibilities. With only [5] left in group 0, `d` would be 1.\n\n```json\n{\"s\": 38911, \"d\": 1, \"a\": {\"0\": [5]}, \"p\": [{\"i\": 0, \"c\": -17, \"m\": 1}, {\"i\": 1, \"c\": 2, \"m\": 0}, {\"i\": 2, \"c\": -27, \"m\": 0}, {\"i\": 3, \"c\": -2, \"m\": 0}, {\"i\": 4, \"c\": -31, \"m\": 0}], \"t\": 0}"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Claude Haiku 4.5": {
+        "answer": {
+            "s": 38911,
+            "d": 2,
+            "a": {
+                "0": [
+                    3,
+                    5
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -17,
+                    "m": 0
+                },
+                {
+                    "i": 1,
+                    "c": 2,
+                    "m": 0
+                },
+                {
+                    "i": 2,
+                    "c": -27,
+                    "m": 0
+                },
+                {
+                    "i": 3,
+                    "c": -2,
+                    "m": 1
+                },
+                {
+                    "i": 4,
+                    "c": -31,
+                    "m": 0
+                }
+            ],
+            "t": 5
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Claude Opus 4.1": {
+        "answer": {
+            "s": 38911,
+            "d": 2,
+            "a": {
+                "0": [
+                    3,
+                    5
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -17,
+                    "m": 0
+                },
+                {
+                    "i": 1,
+                    "c": 2,
+                    "m": 0
+                },
+                {
+                    "i": 2,
+                    "c": -27,
+                    "m": 0
+                },
+                {
+                    "i": 3,
+                    "c": -2,
+                    "m": 0
+                },
+                {
+                    "i": 4,
+                    "c": -31,
+                    "m": 0
+                }
+            ],
+            "t": 0
+        },
+        "proximity": 48.2,
+        "score": 0
+    },
+    "Gemini 2.5 Pro": {
+        "answer": {
+            "s": 38911,
+            "d": -5,
+            "a": {
+                "0": [
+                    5
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -17,
+                    "m": 1
+                },
+                {
+                    "i": 1,
+                    "c": 2,
+                    "m": 0
+                },
+                {
+                    "i": 2,
+                    "c": -27,
+                    "m": 0
+                },
+                {
+                    "i": 3,
+                    "c": -2,
+                    "m": 0
+                },
+                {
+                    "i": 4,
+                    "c": -31,
+                    "m": 0
+                }
+            ],
+            "t": 0
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Mistral Large": {
+        "answer": {
+            "s": 38911,
+            "d": 2,
+            "a": {
+                "0": [
+                    3,
+                    5
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -17,
+                    "m": 0
+                },
+                {
+                    "i": 1,
+                    "c": 2,
+                    "m": 0
+                },
+                {
+                    "i": 2,
+                    "c": -27,
+                    "m": 0
+                },
+                {
+                    "i": 3,
+                    "c": -2,
+                    "m": 0
+                },
+                {
+                    "i": 4,
+                    "c": -31,
+                    "m": 1
+                }
+            ],
+            "t": 0
+        },
+        "proximity": 43.4,
+        "score": 0
+    },
+    "Mixtral 8x7B": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Mixtral 8x7B]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Llama3 70B HF": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Llama3 70B HF]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Command R+": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Command R+]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "DeepSeek-Math 7B": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for DeepSeek-Math 7B]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Grok 2": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Grok 2]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    }
+}

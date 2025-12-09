@@ -1,0 +1,428 @@
+{
+    "GPT-4o": {
+        "answer": {
+            "s": 906103,
+            "d": 986503,
+            "a": {
+                "0": [
+                    0,
+                    1,
+                    2,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "1": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "2": [
+                    0,
+                    2,
+                    3,
+                    4,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "3": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    7,
+                    8,
+                    9
+                ],
+                "4": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    9
+                ],
+                "5": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -6,
+                    "m": 0
+                },
+                {
+                    "i": 1,
+                    "c": 0,
+                    "m": 0
+                },
+                {
+                    "i": 2,
+                    "c": 0,
+                    "m": 0
+                }
+            ],
+            "t": 3
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "GPT-o1": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for GPT-o1]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Claude Sonnet 4.5": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[0, 1, 2, 3, 4, 5, 7, 8, 9]`, removing index 4 gives `[0, 1, 2, 3, 5, 7, 8, 9]`\n- `t` changes from 2 to next player (cycling through players)\n- `d` needs to be recalculated based on the removed digit\n- Player `m` values need to be updated\n\nThe digit at index 4 in group \"3\" is `4`. Removing it and updating:\n\n```json\n{\"s\": 906103, \"d\": 986103, \"a\": {\"0\": [0, 1, 2, 4, 5, 6, 7, 8, 9], \"1\": [1, 2, 3, 4, 5, 6, 7, 8, 9], \"2\": [0, 2, 3, 4, 6, 7, 8, 9], \"3\": [0, 1, 2, 3, 5, 7, 8, 9], \"4\": [1, 2, 3, 4, 5, 6, 7, 9], \"5\": [1, 2, 3, 4, 5, 6, 7, 8]}, \"p\": [{\"i\": 0, \"c\": -6, \"m\": 0}, {\"i\": 1, \"c\": 0, \"m\": 0}, {\"i\": 2, \"c\": 0, \"m\": 2}], \"t\": 0}"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Claude Haiku 4.5": {
+        "answer": {
+            "s": 906103,
+            "d": 986503,
+            "a": {
+                "0": [
+                    0,
+                    1,
+                    2,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "1": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "2": [
+                    0,
+                    2,
+                    3,
+                    4,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "3": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    7,
+                    8,
+                    9
+                ],
+                "4": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    9
+                ],
+                "5": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -6,
+                    "m": 0
+                },
+                {
+                    "i": 1,
+                    "c": 0,
+                    "m": 0
+                },
+                {
+                    "i": 2,
+                    "c": 0,
+                    "m": 1
+                }
+            ],
+            "t": 2
+        },
+        "proximity": 32.17,
+        "score": 0
+    },
+    "Claude Opus 4.1": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[0, 1, 2, 3, 4, 5, 7, 8, 9], removing index 4 (value 4) gives [0, 1, 2, 3, 5, 7, 8, 9]\n- Swap `m` values for elements in `p` where `i` equals `a.g` (3) or `t` (2)\n- Element at index 2 has `i`=2, so swap its `m` from 1 to 0\n- Since there's no element with `i`=3, we might need to consider the pattern differently\n- Looking closer, it seems to swap `m` values for the element at position `t` in the `p` array\n- Update `d` value (appears to decrease by some amount)\n\n{\"s\": 906103, \"d\": 906503, \"a\": {\"0\": [0, 1, 2, 4, 5, 6, 7, 8, 9], \"1\": [1, 2, 3, 4, 5, 6, 7, 8, 9], \"2\": [0, 2, 3, 4, 6, 7, 8, 9], \"3\": [0, 1, 2, 3, 5, 7, 8, 9], \"4\": [1, 2, 3, 4, 5, 6, 7, 9], \"5\": [1, 2, 3, 4, 5, 6, 7, 8]}, \"p\": [{\"i\": 0, \"c\": -6, \"m\": 0}, {\"i\": 1, \"c\": 0, \"m\": 0}, {\"i\": 2, \"c\": 0, \"m\": 0}], \"t\": 1}"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Gemini 2.5 Pro": {
+        "answer": {
+            "s": 906103,
+            "d": 936503,
+            "a": {
+                "0": [
+                    0,
+                    1,
+                    2,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "1": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "2": [
+                    0,
+                    2,
+                    3,
+                    4,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "3": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    7,
+                    8,
+                    9
+                ],
+                "4": [
+                    1,
+                    2,
+                    4,
+                    5,
+                    6,
+                    7,
+                    9
+                ],
+                "5": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -6,
+                    "m": 0
+                },
+                {
+                    "i": 1,
+                    "c": 0,
+                    "m": 0
+                },
+                {
+                    "i": 2,
+                    "c": 0,
+                    "m": 0
+                }
+            ],
+            "t": 4
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Mistral Large": {
+        "answer": {
+            "s": 906103,
+            "d": 986003,
+            "a": {
+                "0": [
+                    0,
+                    1,
+                    2,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "1": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9
+                ],
+                "2": [
+                    0,
+                    2,
+                    3,
+                    4,
+                    6,
+                    7,
+                    8
+                ],
+                "3": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    7,
+                    8,
+                    9
+                ],
+                "4": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    9
+                ],
+                "5": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ]
+            },
+            "p": [
+                {
+                    "i": 0,
+                    "c": -6,
+                    "m": 0
+                },
+                {
+                    "i": 1,
+                    "c": 0,
+                    "m": 0
+                },
+                {
+                    "i": 2,
+                    "c": -1,
+                    "m": 1
+                }
+            ],
+            "t": 4
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Mixtral 8x7B": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Mixtral 8x7B]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Llama3 70B HF": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Llama3 70B HF]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Command R+": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Command R+]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "DeepSeek-Math 7B": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for DeepSeek-Math 7B]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    },
+    "Grok 2": {
+        "answer": {
+            "error": "invalid_json",
+            "raw": "[Error: API call failed for Grok 2]"
+        },
+        "proximity": 0.0,
+        "score": 0
+    }
+}
