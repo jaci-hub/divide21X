@@ -9,7 +9,7 @@ setup(
     install_requires=[
         "gymnasium>=0.29",
         "numpy>=1.23",
-        "divide21env>=0.2.7",
+        "divide21env>=0.2.8",
     ],
     python_requires=">=3.10",
 )
