@@ -1,7 +1,7 @@
 Model,Provider,Average Score (%)
-Gemini 2.5 Pro,Google,45.45
-GPT-4o,OpenAI,18.18
-Claude Sonnet 4.5,Anthropic,18.18
+Gemini 2.5 Pro,Google,41.67
+GPT-4o,OpenAI,16.67
+Claude Sonnet 4.5,Anthropic,16.67
 GPT-o1,OpenAI,0.0
 Claude Haiku 4.5,Anthropic,0.0
 Claude Opus 4.1,Anthropic,0.0
