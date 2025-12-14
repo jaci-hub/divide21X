@@ -1,4 +1,4 @@
-# Divide21X — A Deterministic Symbolic Reasoning Benchmark for Large Language Models (LLMs)
+# Divide21X — A Reasoning Benchmark for Large Language Models (LLMs)
 
 Divide21X is a daily, automated benchmark that evaluates the symbolic mathematical reasoning of Large Language Models (LLMs).
 Every day, a challenge is generated, sent to multiple LLM APIs, and graded against a deterministic simulator.
