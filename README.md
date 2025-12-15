@@ -12,7 +12,7 @@ It is a pure reasoning benchmark, because it isolates:
 
 - No world knowledge
 
-- No pattern shortcuts
+- No pattern recognition
 
 - No ambiguous goals
 
@@ -21,7 +21,7 @@ Just mathematical, symbolic, rule-based cognition.
 
 # What does Divide21X Measure?
 
-### 1. True Symbolic Mathematical Reasoning
+### 1. True Symbolic Reasoning
 
 LLMs must apply formally defined operations to transform an initial environment state.
 This involves:
